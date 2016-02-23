@@ -74,18 +74,18 @@
 			<div class="card-content">
 				<span class="card-title" style="color:black;">Computer mode</span>
 				<p>
-				  <form action="#" id="computer_mode_selection_form">
+				  <form id="computer_mode_selection_form">
 				    <p>
-				      <input class="with-gap" name="group1" type="radio" id="pc_mode_random" checked="checked"/>
+				      <input class="with-gap" name="group1" type="radio" id="pc_mode_random" checked="checked" onchange="pc_mode_selection(this.id)"/>
 				      <label for="pc_mode_random" style="color:black">Computer picks random moves</label>
 				    </p>
 				    <p>
-				      <input class="with-gap" name="group1" type="radio" id="pc_mode_stupid" disabled="disabled"/>
+				      <input class="with-gap" name="group1" type="radio" id="pc_mode_stupid" disabled="disabled" onchange="pc_mode_selection(this.id)"/>
 				      <label for="pc_mode_stupid">Computer lets you win</label>
 				    </p>
 				    <p>
-				      <input class="with-gap" name="group1" type="radio" id="pc_mode_minimax" disabled="disabled" />
-				      <label for="pc_mode_minimax">Minimax</label>
+				      <input class="with-gap" name="group1" type="radio" id="pc_mode_minimax" onchange="pc_mode_selection(this.id)"/>
+				      <label for="pc_mode_minimax">Minimax level 1</label>
 				    </p>
 				  </form>
 				</p>
@@ -100,7 +100,15 @@
 
 <script>
 
-//$('#pc_mode_random')[0]['value']
+var computer_mode = 'pc_mode_random' 
+
+function pc_mode_selection(mode_selected){
+	
+	console.log('test')
+	console.log(mode_selected)
+	computer_mode = mode_selected
+}
+
 
 function Bord(){
 	this.score = {"playerA": 0 , "playerB":0}
@@ -160,12 +168,7 @@ Bord.prototype.move = function(selected_field_code, real_move_or_tree_building){
 	selected_field_position = this.field_names.indexOf(selected_field_code)
 	selected_field_value = this.field_values[selected_field_position]
 
-	// Testing
-	console.log('Move information')
-	console.log('Field code: ' + selected_field_code)
-	console.log('Field position: ' + selected_field_position)
-	console.log('Field value: ' + selected_field_value)
-
+	// How many stones does he pick up and distribute
 	var stones_to_distribute = selected_field_value
 
 	// Set initial selected fields to zero
@@ -173,7 +176,6 @@ Bord.prototype.move = function(selected_field_code, real_move_or_tree_building){
 	
 	// Distribute the stones
 	for(var i=1; i <= stones_to_distribute; i++ ){
-		console.log(i)
 		board_field_to_fill = selected_field_position + i;
 		if(board_field_to_fill > 11)
 			board_field_to_fill = board_field_to_fill - 12;
@@ -191,21 +193,54 @@ Bord.prototype.move = function(selected_field_code, real_move_or_tree_building){
 		main_bord.print_to_html();
 		this.set_next_player_to_move();
 		this.find_possible_moves();
-		// If it is the computer, let him pick random move, otherwise prepare board for human
+		// If it is the computer, computer move, otherwise prepare board for human
 		if(this.player_to_move == 'B'){
-			random_selected_field = this.possible_moves[Math.floor(Math.random()*this.possible_moves.length)];
-			console.log("Computer picked random: " + random_selected_field)
-			this.move(random_selected_field, "real");
+			//Computer move, is random mode selected?
+			if(computer_mode == 'pc_mode_random'){
+				random_selected_field = this.possible_moves[Math.floor(Math.random()*this.possible_moves.length)];
+				this.move(random_selected_field, "real");
+			}else if(computer_mode == 'pc_mode_minimax'){
+				best_move = this.find_mini_max_move()
+				this.move(best_move, "real");
+			}
 		}else{
 			this.visualize_possible_moves();
 		}
-		
+	}else if(real_move_or_tree_building == "tree_building"){
+
 	}
 }
 
+Bord.prototype.find_mini_max_move = function(){
+	// He already knows the next possible moves, which one should he pick?
+	console.log('Inside mini max')
+	var score_tree = {}
+	var max_score_L1;
+	var best_move;
+	for(var i = 0; i < this.possible_moves.length; i++){
+		console.log('Inside loop, i = ' + i)
+		score_tree[this.possible_moves[i]] = {}
+		var virtual_bord = jQuery.extend(true, {}, this)
+		virtual_bord.move(virtual_bord.possible_moves[i], "tree_building")
+		score_tree[virtual_bord.possible_moves[i]]['score_L1'] = virtual_bord.score['playerB'] - virtual_bord.score['playerA'] 
+		if(i == 0){
+			max_score_L1 = score_tree[virtual_bord.possible_moves[i]]['score_L1'];
+			best_move = virtual_bord.possible_moves[i];
+		}else{
+			if(score_tree[virtual_bord.possible_moves[i]]['score_L1'] > max_score_L1){
+				max_score_L1 = score_tree[virtual_bord.possible_moves[i]]['score_L1'];
+				best_move = virtual_bord.possible_moves[i];
+			}
+		}
+	}
+	console.log('He choose best move: ' + best_move)
+	return best_move
+}
+
+
+
 Bord.prototype.remove_stones_conquered_and_update_score = function(){
 	
-	console.log('Last stone landed: ' + this.last_stone_landed)
 
 	// First check, the last stone must be landed in the other player his array
 	if(this.last_stone_landed.indexOf(this.player_to_move) != -1) return
@@ -214,7 +249,6 @@ Bord.prototype.remove_stones_conquered_and_update_score = function(){
 	// Or the score in that field after landing must be zero
 	var last_stone_position = this.field_names.indexOf(this.last_stone_landed)
 	if(this.field_values[last_stone_position] != 1) return
-	console.log('Score')
 
 	// Score!
 
@@ -229,11 +263,6 @@ Bord.prototype.remove_stones_conquered_and_update_score = function(){
 	}, this)
 	field_captured_code = field_captured_code[0]
 	field_captured_position = this.field_names.indexOf(field_captured_code)
-
-	console.log('Last stone position: ' + last_stone_position)
-	console.log('Last stone code: ' + this.field_names[last_stone_position])
-	console.log('Field captured position: ' + field_captured_position)
-	console.log('Field captured code: ' + field_captured_code)
 
 	// Update scores
 	if(this.player_to_move == "A"){
