@@ -1,0 +1,267 @@
+<html>
+<header>
+	<title>Makala</title>
+	<script type="text/javascript" src="javascript/jquery.js"></script>
+	<link type="text/css" rel="stylesheet" href="materialize/css/materialize.min.css"  media="screen,projection"/>
+	<script type="text/javascript" src="materialize/js/materialize.min.js"></script>
+	<style>
+		body{font-family: monospace;}
+		.bord_spot{
+			text-align: center;
+		}
+		.bord_spot_span{
+			padding:5px;
+		}
+    
+	</style>
+</header>
+<body>
+
+
+<div class="row">
+	<div class="col s12 m6">
+		<div class="card">
+			<div class="card-content">
+				<span class="card-title" style="color:black;">Bord</span>
+				<table id="bord" style="width:100%">
+					<tr>
+			    		<td class="bord_spot">A1</td>
+			    		<td class="bord_spot">A2</td> 
+			    		<td class="bord_spot">A3</td>
+			    		<td class="bord_spot">A4</td>
+			    		<td class="bord_spot">A5</td>
+			    		<td class="bord_spot">A6</td>
+		  			</tr>
+		  			<tr>
+			    		<td class="bord_spot"><span id="A1" class="bord_spot_span">0</span></td>
+			    		<td class="bord_spot"><span id="A2" class="bord_spot_span">0</span></td> 
+			    		<td class="bord_spot"><span id="A3" class="bord_spot_span">0</span></td>
+			    		<td class="bord_spot"><span id="A4" class="bord_spot_span">0</span></td>
+			    		<td class="bord_spot"><span id="A5" class="bord_spot_span">0</span></td>
+			    		<td class="bord_spot"><span id="A6" class="bord_spot_span">0</span></td>
+		  			</tr>
+		  			<tr>
+			    		<td class="bord_spot"><span id="B1" class="bord_spot_span">0</span></td>
+			    		<td class="bord_spot"><span id="B2" class="bord_spot_span">0</span></td> 
+			    		<td class="bord_spot"><span id="B3" class="bord_spot_span">0</span></td>
+			    		<td class="bord_spot"><span id="B4" class="bord_spot_span">0</span></td>
+			    		<td class="bord_spot"><span id="B5" class="bord_spot_span">0</span></td>
+			    		<td class="bord_spot"><span id="B6" class="bord_spot_span">0</span></td>
+		  			</tr>
+		  			<tr>
+			    		<td class="bord_spot">B1</td>
+			    		<td class="bord_spot">B2</td> 
+			    		<td class="bord_spot">B3</td>
+			    		<td class="bord_spot">B4</td>
+			    		<td class="bord_spot">B5</td>
+			    		<td class="bord_spot">B6</td>
+		  			</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div class="col s12 m6">
+		<div class="card">
+			<div class="card-content">
+				<span class="card-title" style="color:black;">Gameplay</span>
+				<p>
+					Score player A: <span id="Score_playerA"></span><br>
+					Score player B: <span id="Score_playerB"></span><br>
+				</p>
+			</div>
+		</div>
+	</div>
+</div>
+
+<p>
+</p>
+</body>
+
+<script>
+
+
+
+
+function Bord(){
+	this.score = {"playerA": 0 , "playerB":0}
+	
+	this.field_names = ["A6", "A5", "A4", "A3", "A2", "A1", "B1", "B2", "B3", "B4", "B5", "B6"]
+	this.field_values = [4,4,4,4,4,4,4,4,4,4,4,4]
+	
+	this.player_to_move = "A"
+	this.possible_moves = []
+	this.last_stone_landed;
+	this.print_to_html();
+
+	this.find_possible_moves();
+
+
+}
+
+Bord.prototype.find_possible_moves = function(){
+	
+	// Create an array with the possible moves
+	this.possible_moves = this.field_names
+
+	// Filter, the current player should be in the field name
+	this.possible_moves = this.possible_moves.filter(function(field_name){
+		return field_name.indexOf(this.player_to_move) != -1
+	}, this)
+
+	// Filter, the number of stones in the possible fields should be bigger than zero
+	this.possible_moves = this.possible_moves.filter(function(field_name){
+		field_position = this.field_names.indexOf(field_name)
+		return this.field_values[field_position] > 0
+	}, this)
+
+	// Add a border and event listener around the ones that are possible
+	this.field_names.forEach(function(field_name, field_position){
+		css_name = "#" + field_name
+		if(this.possible_moves.indexOf(field_name) != -1){
+			$('body').off('click',css_name)
+			$('body').on('click', css_name,  field_name, correct_button_clicked)
+			$(css_name).css('border', '3px solid black')
+		}else{
+			$('body').off('click',css_name)
+			$('body').on('click', css_name,field_name,  false_button_clicked)
+			$(css_name).css('border-width', '0')
+		}
+	}, this)
+}
+
+function correct_button_clicked(click_event){
+	field_name_clicked = click_event.data
+	main_bord.move(field_name_clicked)
+	console.log('Correct button: ' + field_name_clicked + ' clicked')
+}
+function false_button_clicked(){
+	console.log('False button clicked')	
+}
+
+Bord.prototype.move = function(selected_field_code){
+
+	// Decode selected field to position
+	selected_field_position = this.field_names.indexOf(selected_field_code)
+	selected_field_value = this.field_values[selected_field_position]
+
+	// Testing
+	console.log('Move information')
+	console.log('Field code: ' + selected_field_code)
+	console.log('Field position: ' + selected_field_position)
+	console.log('Field value: ' + selected_field_value)
+
+	var stones_to_distribute = selected_field_value
+
+	// Set initial selected fields to zero
+	this.field_values[selected_field_position] = 0
+	
+	// Distribute the stones
+	for(var i=1; i <= stones_to_distribute; i++ ){
+		console.log(i)
+		board_field_to_fill = selected_field_position + i;
+		if(board_field_to_fill > 11)
+			board_field_to_fill = board_field_to_fill - 12;
+		this.field_values[board_field_to_fill] +=1 
+	}
+
+	// Remember after the loop where the last stone landed, this is important to calculate the scores
+	this.last_stone_landed = this.field_names[board_field_to_fill]
+
+	// Calculate scores
+	this.remove_stones_conquered_and_update_score();
+
+	// And print
+	this.print_to_html();
+
+	// Switch player
+	this.set_next_player_to_move();
+
+	// Set possible moves
+	this.find_possible_moves();
+}
+
+Bord.prototype.remove_stones_conquered_and_update_score = function(){
+	
+	console.log('Last stone landed: ' + this.last_stone_landed)
+
+	// First check, the last stone must be landed in the other player his array
+	if(this.last_stone_landed.indexOf(this.player_to_move) != -1) return
+	// Second check, the last stone landed must be the only stone in that field
+	// Or the score in that field after landing must be zero
+	var last_stone_position = this.field_names.indexOf(this.last_stone_landed)
+	if(this.field_values[last_stone_position] != 1) return
+	console.log('Score')
+
+	// Score, take the stones and update the scores
+	field_captured_position = last_stone_position + 6
+	if(field_captured_position > 11) field_captured_position = field_captured_position - 12
+
+	if(this.player_to_move == "A"){
+		this.score["playerA"] += this.field_values[field_captured_position]
+	}else if(this.player_to_move == "B"){
+		this.score["playerB"] += this.field_values[field_captured_position]
+	}
+
+	this.field_values[field_captured_position] = 0
+
+
+	// 
+
+	// Which fields might possible be removed? 
+	// If player A just played
+/*	this.possible_moves = this.field_names
+
+	// Filter, the current player should be in the field name
+	this.possible_moves = this.possible_moves.filter(function(field_name){
+		return field_name.indexOf(this.player_to_move) != -1
+	}, this)
+
+	// Filter, the number of stones in the possible fields should be bigger than zero
+	this.possible_moves = this.possible_moves.filter(function(field_name){
+		field_position = this.field_names.indexOf(field_name)
+		return this.field_values[field_position] > 0
+	}, this)*/	
+
+}
+
+Bord.prototype.set_next_player_to_move = function(){
+	if(this.player_to_move == "A"){
+		this.player_to_move = "B"
+	}else if(this.player_to_move == "B"){
+	 	this.player_to_move = "A"
+	}
+}
+
+Bord.prototype.print_to_html = function(){
+	$("#A1").text(this.field_values[5])
+	$("#A2").text(this.field_values[4])
+	$("#A3").text(this.field_values[3])
+	$("#A4").text(this.field_values[2])
+	$("#A5").text(this.field_values[1])
+	$("#A6").text(this.field_values[0])
+	$("#B1").text(this.field_values[6])
+	$("#B2").text(this.field_values[7])
+	$("#B3").text(this.field_values[8])
+	$("#B4").text(this.field_values[9])
+	$("#B5").text(this.field_values[10])
+	$("#B6").text(this.field_values[11])
+
+	$("#Score_playerA").text(this.score['playerA'])
+	$("#Score_playerB").text(this.score['playerB'])
+
+
+}
+
+main_bord = new Bord();
+
+
+//main_bord.move("A4");
+//main_bord.find_possible_moves();
+
+
+
+
+</script>
+
+</html>
+
