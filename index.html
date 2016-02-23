@@ -70,6 +70,27 @@
 				</p>
 			</div>
 		</div>
+		<div class="card">
+			<div class="card-content">
+				<span class="card-title" style="color:black;">Computer mode</span>
+				<p>
+				  <form action="#" id="computer_mode_selection_form">
+				    <p>
+				      <input class="with-gap" name="group1" type="radio" id="pc_mode_random" checked="checked"/>
+				      <label for="pc_mode_random" style="color:black">Computer picks random moves</label>
+				    </p>
+				    <p>
+				      <input class="with-gap" name="group1" type="radio" id="pc_mode_stupid" disabled="disabled"/>
+				      <label for="pc_mode_stupid" style="color:black">Computer lets you win</label>
+				    </p>
+				    <p>
+				      <input class="with-gap" name="group1" type="radio" id="pc_mode_minimax" disabled="disabled" />
+				      <label for="pc_mode_minimax">Minimax</label>
+				    </p>
+				  </form>
+				</p>
+			</div>
+		</div>
 	</div>
 </div>
 
@@ -79,8 +100,7 @@
 
 <script>
 
-
-
+//$('#pc_mode_random')[0]['value']
 
 function Bord(){
 	this.score = {"playerA": 0 , "playerB":0}
@@ -91,11 +111,6 @@ function Bord(){
 	this.player_to_move = "A"
 	this.possible_moves = []
 	this.last_stone_landed;
-	this.print_to_html();
-
-	this.find_possible_moves();
-
-
 }
 
 Bord.prototype.find_possible_moves = function(){
@@ -113,6 +128,9 @@ Bord.prototype.find_possible_moves = function(){
 		field_position = this.field_names.indexOf(field_name)
 		return this.field_values[field_position] > 0
 	}, this)
+}
+
+Bord.prototype.visualize_possible_moves = function(){
 
 	// Add a border and event listener around the ones that are possible
 	this.field_names.forEach(function(field_name, field_position){
@@ -131,14 +149,12 @@ Bord.prototype.find_possible_moves = function(){
 
 function correct_button_clicked(click_event){
 	field_name_clicked = click_event.data
-	main_bord.move(field_name_clicked)
-	console.log('Correct button: ' + field_name_clicked + ' clicked')
+	main_bord.move(field_name_clicked, "real")
 }
 function false_button_clicked(){
-	console.log('False button clicked')	
 }
 
-Bord.prototype.move = function(selected_field_code){
+Bord.prototype.move = function(selected_field_code, real_move_or_tree_building){
 
 	// Decode selected field to position
 	selected_field_position = this.field_names.indexOf(selected_field_code)
@@ -170,14 +186,21 @@ Bord.prototype.move = function(selected_field_code){
 	// Calculate scores
 	this.remove_stones_conquered_and_update_score();
 
-	// And print
-	this.print_to_html();
-
-	// Switch player
-	this.set_next_player_to_move();
-
-	// Set possible moves
-	this.find_possible_moves();
+	if(real_move_or_tree_building == "real"){
+		// Real move, so print everything and make board ready for next player
+		main_bord.print_to_html();
+		this.set_next_player_to_move();
+		this.find_possible_moves();
+		// If it is the computer, let him pick random move, otherwise prepare board for human
+		if(this.player_to_move == 'B'){
+			random_selected_field = this.possible_moves[Math.floor(Math.random()*this.possible_moves.length)];
+			console.log("Computer picked random: " + random_selected_field)
+			this.move(random_selected_field, "real");
+		}else{
+			this.visualize_possible_moves();
+		}
+		
+	}
 }
 
 Bord.prototype.remove_stones_conquered_and_update_score = function(){
@@ -222,24 +245,6 @@ Bord.prototype.remove_stones_conquered_and_update_score = function(){
 	// Empty field 
 	this.field_values[field_captured_position] = 0
 
-
-	
-
-	// Which fields might possible be removed? 
-	// If player A just played
-/*	this.possible_moves = this.field_names
-
-	// Filter, the current player should be in the field name
-	this.possible_moves = this.possible_moves.filter(function(field_name){
-		return field_name.indexOf(this.player_to_move) != -1
-	}, this)
-
-	// Filter, the number of stones in the possible fields should be bigger than zero
-	this.possible_moves = this.possible_moves.filter(function(field_name){
-		field_position = this.field_names.indexOf(field_name)
-		return this.field_values[field_position] > 0
-	}, this)*/	
-
 }
 
 Bord.prototype.set_next_player_to_move = function(){
@@ -267,14 +272,13 @@ Bord.prototype.print_to_html = function(){
 	$("#Score_playerA").text(this.score['playerA'])
 	$("#Score_playerB").text(this.score['playerB'])
 
-
 }
 
 main_bord = new Bord();
+main_bord.print_to_html();
+main_bord.find_possible_moves();
+main_bord.visualize_possible_moves();
 
-
-//main_bord.move("A4");
-//main_bord.find_possible_moves();
 
 
 
