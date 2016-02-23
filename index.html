@@ -186,26 +186,44 @@ Bord.prototype.remove_stones_conquered_and_update_score = function(){
 
 	// First check, the last stone must be landed in the other player his array
 	if(this.last_stone_landed.indexOf(this.player_to_move) != -1) return
+	
 	// Second check, the last stone landed must be the only stone in that field
 	// Or the score in that field after landing must be zero
 	var last_stone_position = this.field_names.indexOf(this.last_stone_landed)
 	if(this.field_values[last_stone_position] != 1) return
 	console.log('Score')
 
-	// Score, take the stones and update the scores
-	field_captured_position = last_stone_position + 6
-	if(field_captured_position > 11) field_captured_position = field_captured_position - 12
+	// Score!
 
+	// Find the correct position to take stones of, take the stones and update the scores,
+	// With filter mechanism, filter row current player, filter nummer of last stone landed (i.e.: A3 -> B3)
+	field_captured_code = this.field_names
+	field_captured_code = field_captured_code.filter(function(field_code, field_position){
+		return field_code.indexOf(this.player_to_move) > -1
+	}, this)
+	field_captured_code = field_captured_code.filter(function(field_code, field_position){
+		return field_code.indexOf(this.last_stone_landed[1]) > -1
+	}, this)
+	field_captured_code = field_captured_code[0]
+	field_captured_position = this.field_names.indexOf(field_captured_code)
+
+	console.log('Last stone position: ' + last_stone_position)
+	console.log('Last stone code: ' + this.field_names[last_stone_position])
+	console.log('Field captured position: ' + field_captured_position)
+	console.log('Field captured code: ' + field_captured_code)
+
+	// Update scores
 	if(this.player_to_move == "A"){
-		this.score["playerA"] += this.field_values[field_captured_position]
+	 	this.score["playerA"] += this.field_values[field_captured_position]
 	}else if(this.player_to_move == "B"){
-		this.score["playerB"] += this.field_values[field_captured_position]
+	 	this.score["playerB"] += this.field_values[field_captured_position]
 	}
 
+	// Empty field 
 	this.field_values[field_captured_position] = 0
 
 
-	// 
+	
 
 	// Which fields might possible be removed? 
 	// If player A just played
