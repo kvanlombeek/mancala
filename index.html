@@ -5,62 +5,74 @@
 	<link type="text/css" rel="stylesheet" href="materialize/css/materialize.min.css"  media="screen,projection"/>
 	<script type="text/javascript" src="materialize/js/materialize.min.js"></script>
 	<style>
-		body{font-family: monospace;}
-		.bord_spot{
+/*		body{
+			font-family: monospace;
+		}*/
+		.bord_spot_legend{
 			text-align: center;
+		}
+		.bord_spot{
+			font-size:200%;
+			text-align: center;
+			border: 3px solid black;
 		}
 		.bord_spot_span{
 			padding:5px;
 		}
-    
+		.bord_spot div{
+			background-color: lightblue;
+			width: 100%;
+			height: 100%;
+			padding: 10px;
+		}
 	</style>
 </header>
 <body>
 
 
 <div class="row">
-	<div class="col s12 m6">
+	<div class="col s12 m12 l6">
 		<div class="card">
 			<div class="card-content">
 				<span class="card-title" style="color:black;">Bord</span>
 				<table id="bord" style="width:100%">
 					<tr>
-			    		<td class="bord_spot">A1</td>
-			    		<td class="bord_spot">A2</td> 
-			    		<td class="bord_spot">A3</td>
-			    		<td class="bord_spot">A4</td>
-			    		<td class="bord_spot">A5</td>
-			    		<td class="bord_spot">A6</td>
+			    		<td class="bord_spot_legend">A1</td>
+			    		<td class="bord_spot_legend">A2</td> 
+			    		<td class="bord_spot_legend">A3</td>
+			    		<td class="bord_spot_legend">A4</td>
+			    		<td class="bord_spot_legend">A5</td>
+			    		<td class="bord_spot_legend">A6</td>
 		  			</tr>
 		  			<tr>
-			    		<td class="bord_spot"><span id="A1" class="bord_spot_span">0</span></td>
-			    		<td class="bord_spot"><span id="A2" class="bord_spot_span">0</span></td> 
-			    		<td class="bord_spot"><span id="A3" class="bord_spot_span">0</span></td>
-			    		<td class="bord_spot"><span id="A4" class="bord_spot_span">0</span></td>
-			    		<td class="bord_spot"><span id="A5" class="bord_spot_span">0</span></td>
-			    		<td class="bord_spot"><span id="A6" class="bord_spot_span">0</span></td>
+			    		<td class="bord_spot"><div id="A1"><span class="bord_spot_span">0</span></div></td>
+			    		<td class="bord_spot"><div id="A2"><span class="bord_spot_span">0</span></div></td> 
+			    		<td class="bord_spot"><div id="A3"><span class="bord_spot_span">0</span></div></td>
+			    		<td class="bord_spot"><div id="A4"><span class="bord_spot_span">0</span></div></td>
+			    		<td class="bord_spot"><div id="A5"><span class="bord_spot_span">0</span></div></td>
+			    		<td class="bord_spot"><div id="A6"><span class="bord_spot_span">0</span></div></td>
 		  			</tr>
 		  			<tr>
-			    		<td class="bord_spot"><span id="B1" class="bord_spot_span">0</span></td>
-			    		<td class="bord_spot"><span id="B2" class="bord_spot_span">0</span></td> 
-			    		<td class="bord_spot"><span id="B3" class="bord_spot_span">0</span></td>
-			    		<td class="bord_spot"><span id="B4" class="bord_spot_span">0</span></td>
-			    		<td class="bord_spot"><span id="B5" class="bord_spot_span">0</span></td>
-			    		<td class="bord_spot"><span id="B6" class="bord_spot_span">0</span></td>
+			    		<td class="bord_spot"><div id="B1"><span class="bord_spot_span">0</span></div></td>
+			    		<td class="bord_spot"><div id="B2"><span class="bord_spot_span">0</span></div></td> 
+			    		<td class="bord_spot"><div id="B3"><span class="bord_spot_span">0</span></div></td>
+			    		<td class="bord_spot"><div id="B4"><span class="bord_spot_span">0</span></div></td>
+			    		<td class="bord_spot"><div id="B5"><span class="bord_spot_span">0</span></div></td>
+			    		<td class="bord_spot"><div id="B6"><span class="bord_spot_span">0</span></div></td>
 		  			</tr>
 		  			<tr>
-			    		<td class="bord_spot">B1</td>
-			    		<td class="bord_spot">B2</td> 
-			    		<td class="bord_spot">B3</td>
-			    		<td class="bord_spot">B4</td>
-			    		<td class="bord_spot">B5</td>
-			    		<td class="bord_spot">B6</td>
+			    		<td class="bord_spot_legend">B1</td>
+			    		<td class="bord_spot_legend">B2</td> 
+			    		<td class="bord_spot_legend">B3</td>
+			    		<td class="bord_spot_legend">B4</td>
+			    		<td class="bord_spot_legend">B5</td>
+			    		<td class="bord_spot_legend">B6</td>
 		  			</tr>
 				</table>
 			</div>
 		</div>
 	</div>
-	<div class="col s12 m6">
+	<div class="col s12 m12 l6">
 		<div class="card">
 			<div class="card-content">
 				<span class="card-title" style="color:black;">Gameplay</span>
@@ -68,24 +80,28 @@
 					Score player A: <span id="Score_playerA"></span><br>
 					Score player B: <span id="Score_playerB"></span><br>
 				</p>
+				<br>
+				<p>
+					Latest computer move: <span id="latest_computer_move"></span>
+				</p>
 			</div>
 		</div>
 		<div class="card">
 			<div class="card-content">
 				<span class="card-title" style="color:black;">Computer mode</span>
 				<p>
-				  <form action="#" id="computer_mode_selection_form">
+				  <form id="computer_mode_selection_form">
 				    <p>
-				      <input class="with-gap" name="group1" type="radio" id="pc_mode_random" checked="checked"/>
+				      <input class="with-gap" name="group1" type="radio" id="pc_mode_random" checked="checked" onchange="pc_mode_selection(this.id)"/>
 				      <label for="pc_mode_random" style="color:black">Computer picks random moves</label>
 				    </p>
 				    <p>
-				      <input class="with-gap" name="group1" type="radio" id="pc_mode_stupid" disabled="disabled"/>
+				      <input class="with-gap" name="group1" type="radio" id="pc_mode_stupid" disabled="disabled" onchange="pc_mode_selection(this.id)"/>
 				      <label for="pc_mode_stupid">Computer lets you win</label>
 				    </p>
 				    <p>
-				      <input class="with-gap" name="group1" type="radio" id="pc_mode_minimax" disabled="disabled" />
-				      <label for="pc_mode_minimax">Minimax</label>
+				      <input class="with-gap" name="group1" type="radio" id="pc_mode_minimax" onchange="pc_mode_selection(this.id)"/>
+				      <label for="pc_mode_minimax" style="color:black">Minimax level 1</label>
 				    </p>
 				  </form>
 				</p>
@@ -99,9 +115,12 @@
 </body>
 
 <script>
-
-//$('#pc_mode_random')[0]['value']
-
+var computer_mode = 'pc_mode_random' 
+function pc_mode_selection(mode_selected){
+	console.log('test')
+	console.log(mode_selected)
+	computer_mode = mode_selected
+}
 function Bord(){
 	this.score = {"playerA": 0 , "playerB":0}
 	
@@ -112,101 +131,158 @@ function Bord(){
 	this.possible_moves = []
 	this.last_stone_landed;
 }
-
 Bord.prototype.find_possible_moves = function(){
 	
 	// Create an array with the possible moves
 	this.possible_moves = this.field_names
-
 	// Filter, the current player should be in the field name
 	this.possible_moves = this.possible_moves.filter(function(field_name){
 		return field_name.indexOf(this.player_to_move) != -1
 	}, this)
-
 	// Filter, the number of stones in the possible fields should be bigger than zero
 	this.possible_moves = this.possible_moves.filter(function(field_name){
 		field_position = this.field_names.indexOf(field_name)
 		return this.field_values[field_position] > 0
 	}, this)
 }
-
 Bord.prototype.visualize_possible_moves = function(){
-
 	// Add a border and event listener around the ones that are possible
 	this.field_names.forEach(function(field_name, field_position){
 		css_name = "#" + field_name
 		if(this.possible_moves.indexOf(field_name) != -1){
 			$('body').off('click',css_name)
 			$('body').on('click', css_name,  field_name, correct_button_clicked)
-			$(css_name).css('border', '3px solid black')
+			$(css_name).css('background-color', 'lightblue')
 		}else{
 			$('body').off('click',css_name)
 			$('body').on('click', css_name,field_name,  false_button_clicked)
-			$(css_name).css('border-width', '0')
+			$(css_name).css('background-color', 'transparent')
 		}
 	}, this)
 }
-
 function correct_button_clicked(click_event){
 	field_name_clicked = click_event.data
 	main_bord.move(field_name_clicked, "real")
 }
 function false_button_clicked(){
 }
-
 Bord.prototype.move = function(selected_field_code, real_move_or_tree_building){
-
 	// Decode selected field to position
 	selected_field_position = this.field_names.indexOf(selected_field_code)
 	selected_field_value = this.field_values[selected_field_position]
-
-	// Testing
-	console.log('Move information')
-	console.log('Field code: ' + selected_field_code)
-	console.log('Field position: ' + selected_field_position)
-	console.log('Field value: ' + selected_field_value)
-
+	// How many stones does he pick up and distribute
 	var stones_to_distribute = selected_field_value
-
 	// Set initial selected fields to zero
 	this.field_values[selected_field_position] = 0
 	
 	// Distribute the stones
 	for(var i=1; i <= stones_to_distribute; i++ ){
-		console.log(i)
 		board_field_to_fill = selected_field_position + i;
 		if(board_field_to_fill > 11)
 			board_field_to_fill = board_field_to_fill - 12;
 		this.field_values[board_field_to_fill] +=1 
 	}
-
 	// Remember after the loop where the last stone landed, this is important to calculate the scores
 	this.last_stone_landed = this.field_names[board_field_to_fill]
-
 	// Calculate scores
 	this.remove_stones_conquered_and_update_score();
-
+	
 	if(real_move_or_tree_building == "real"){
 		// Real move, so print everything and make board ready for next player
-		main_bord.print_to_html();
+		this.print_to_html();
 		this.set_next_player_to_move();
 		this.find_possible_moves();
-		// If it is the computer, let him pick random move, otherwise prepare board for human
+		// If it is the computer, computer move, otherwise prepare board for human
 		if(this.player_to_move == 'B'){
-			random_selected_field = this.possible_moves[Math.floor(Math.random()*this.possible_moves.length)];
-			console.log("Computer picked random: " + random_selected_field)
-			this.move(random_selected_field, "real");
+			score_tree = this.build_2_level_tree_minimax
+			console.log('Score tree is build')
+			score_tree = console.log(score_tree)
+
+			//Computer move, is random mode selected?
+/*			if(computer_mode == 'pc_mode_random'){
+				random_selected_field = this.possible_moves[Math.floor(Math.random()*this.possible_moves.length)];
+				this.move(random_selected_field, "real");
+				$('#latest_computer_move').text(random_selected_field)
+			}else if(computer_mode == 'pc_mode_minimax'){
+				best_move = this.find_mini_max_move()
+				this.move(best_move, "real");
+				$('#latest_computer_move').text(best_move)
+			}*/
+
+			//Debugging
+			this.visualize_possible_moves();
+
 		}else{
 			this.visualize_possible_moves();
 		}
-		
+	}else if(real_move_or_tree_building == "tree_building"){
+		this.set_next_player_to_move();
+		this.find_possible_moves();
 	}
 }
 
+// Build 2 level mini max tree, computer picks a move, player picks a move, all combinations of these two levels
+Bord.prototype.build_2_level_tree_minimax = function(current_level){
+	var score_tree = {}
+		console.log('This possible moves, dit is gewoon de computer zijn mogelijkheden')
+	console.log(this.possible_moves)
+	for(var i = 0; i < this.possible_moves.length; i++){
+		console.log('Inside loop, i = ' + i)
+		score_tree[this.possible_moves[i]] = {}
+		var virtual_bord = jQuery.extend(true, {}, this)
+		virtual_bord.move(virtual_bord.possible_moves[i], "tree_building")
+		console.log('Options if player B plays ' + this.possible_moves[i])
+		console.log(virtual_bord.possible_moves)
+		score_tree[this.possible_moves[i]]['score_L1'] = virtual_bord.score['playerB'] - virtual_bord.score['playerA'] 
+		for(var j=0; j < virtual_bord.possible_moves.length; j++){
+			var virtual_bord_L2 = jQuery.extend(true, {}, virtual_bord)
+			virtual_bord_L2.move(virtual_bord.possible_moves[j], "tree_building")
+
+			score_tree[this.possible_moves[i]][virtual_bord.possible_moves[j]]={'score_L2':virtual_bord_L2.score['playerB']-virtual_bord_L2.score['playerA']}
+			console.log('A plays: ' + virtual_bord.possible_moves[j] + ' Score A: ' + virtual_bord_L2.score['playerA'] + ' Score B: ' + virtual_bord_L2.score['playerB'])
+		}
+	}
+	console.log(score_tree)
+	return score_tree;
+}
+
+/*function Score_tree(){
+}
+
+Score_tree.prototype.toString(){	
+}*/
+
+
+// Should get an argument levels deep
+Bord.prototype.find_mini_max_move = function(){
+	// He already knows the next possible moves, which one should he pick?
+	console.log('Inside mini max')
+	var score_tree = {}
+	var max_score_L1;
+	var best_move;
+
+	for(var i = 0; i < this.possible_moves.length; i++){
+		console.log('Inside loop, i = ' + i)
+		score_tree[this.possible_moves[i]] = {}
+		var virtual_bord = jQuery.extend(true, {}, this)
+		virtual_bord.move(virtual_bord.possible_moves[i], "tree_building")
+		score_tree[virtual_bord.possible_moves[i]]['score_L1'] = virtual_bord.score['playerB'] - virtual_bord.score['playerA'] 
+		if(i == 0){
+			max_score_L1 = score_tree[virtual_bord.possible_moves[i]]['score_L1'];
+			best_move = virtual_bord.possible_moves[i];
+		}else{
+			if(score_tree[virtual_bord.possible_moves[i]]['score_L1'] > max_score_L1){
+				max_score_L1 = score_tree[virtual_bord.possible_moves[i]]['score_L1'];
+				best_move = virtual_bord.possible_moves[i];
+			}
+		}
+	}
+	console.log('This is the tree: ' + score_tree)
+	console.log('He choose best move: ' + best_move)
+	return best_move
+}
 Bord.prototype.remove_stones_conquered_and_update_score = function(){
 	
-	console.log('Last stone landed: ' + this.last_stone_landed)
-
 	// First check, the last stone must be landed in the other player his array
 	if(this.last_stone_landed.indexOf(this.player_to_move) != -1) return
 	
@@ -214,10 +290,7 @@ Bord.prototype.remove_stones_conquered_and_update_score = function(){
 	// Or the score in that field after landing must be zero
 	var last_stone_position = this.field_names.indexOf(this.last_stone_landed)
 	if(this.field_values[last_stone_position] != 1) return
-	console.log('Score')
-
 	// Score!
-
 	// Find the correct position to take stones of, take the stones and update the scores,
 	// With filter mechanism, filter row current player, filter nummer of last stone landed (i.e.: A3 -> B3)
 	field_captured_code = this.field_names
@@ -229,24 +302,15 @@ Bord.prototype.remove_stones_conquered_and_update_score = function(){
 	}, this)
 	field_captured_code = field_captured_code[0]
 	field_captured_position = this.field_names.indexOf(field_captured_code)
-
-	console.log('Last stone position: ' + last_stone_position)
-	console.log('Last stone code: ' + this.field_names[last_stone_position])
-	console.log('Field captured position: ' + field_captured_position)
-	console.log('Field captured code: ' + field_captured_code)
-
 	// Update scores
 	if(this.player_to_move == "A"){
 	 	this.score["playerA"] += this.field_values[field_captured_position]
 	}else if(this.player_to_move == "B"){
 	 	this.score["playerB"] += this.field_values[field_captured_position]
 	}
-
 	// Empty field 
 	this.field_values[field_captured_position] = 0
-
 }
-
 Bord.prototype.set_next_player_to_move = function(){
 	if(this.player_to_move == "A"){
 		this.player_to_move = "B"
@@ -254,7 +318,6 @@ Bord.prototype.set_next_player_to_move = function(){
 	 	this.player_to_move = "A"
 	}
 }
-
 Bord.prototype.print_to_html = function(){
 	$("#A1").text(this.field_values[5])
 	$("#A2").text(this.field_values[4])
@@ -268,22 +331,13 @@ Bord.prototype.print_to_html = function(){
 	$("#B4").text(this.field_values[9])
 	$("#B5").text(this.field_values[10])
 	$("#B6").text(this.field_values[11])
-
 	$("#Score_playerA").text(this.score['playerA'])
 	$("#Score_playerB").text(this.score['playerB'])
-
 }
-
 main_bord = new Bord();
 main_bord.print_to_html();
 main_bord.find_possible_moves();
 main_bord.visualize_possible_moves();
-
-
-
-
-
 </script>
 
 </html>
-
