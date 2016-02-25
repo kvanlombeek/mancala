@@ -1,93 +1,72 @@
-<!DOCTYPE html>
-
 <html>
-
-<head>
-  <title>Mancala</title>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
-  <!-- Mobile support -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- Material Design fonts -->
-  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-  <!-- Bootstrap -->
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Bootstrap Material Design -->
-  <link href="bootstrap/dist/css/bootstrap-material-design.css" rel="stylesheet">
-  <link href="bootstrap/dist/css/ripples.min.css" rel="stylesheet">
-
-  <!-- Dropdown.js -->
-  <link href="https://cdn.rawgit.com/FezVrasta/dropdown.js/master/jquery.dropdown.css" rel="stylesheet">
-
-  <!-- Page style -->
-  <link href="bootstrap/index.css" rel="stylesheet">
-
-  <!-- jQuery -->
-  <script type="text/javascript" src="javascript/jquery.js"></script>
-
-  <!-- Twitter Bootstrap -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
-
-	<!-- Material Design for Bootstrap -->
-	<script src="bootstrap/dist/js/material.js"></script>
-	<script src="bootstrap/dist/js/ripples.min.js"></script>
-	<script> 
-	$.material.init();
-	</script>
-
+<header>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Makala</title>
+	<script type="text/javascript" src="javascript/jquery.js"></script>
+	<link type="text/css" rel="stylesheet" href="materialize/css/materialize.min.css"  media="screen,projection"/>
+	<script type="text/javascript" src="materialize/js/materialize.min.js"></script>
 	<style>
-<<<<<<< HEAD
-/*		body{
-			font-family: monospace;
+		html {
+			/*font-size: 20px;*/
+			font-size: 100%; /* default is 16px */
+		}
+		body{
+			/*font-size: 2.1em;*/
+			line-height: 1.3;
+		}
+		@media (max-device-width: 480px) {
+			body {
+				font-size: 1.8em;
+			}
+		}
+/*
+		@media (min-width: 500px) {
+			body {
+				font-size: 1.6em;
+			}
+		}
+
+
+		<div><p><a></a></p></div>
+		div {
+			width: 2em;
+		}
+		p {
+			font-size: 1.5em;
+		}
+		a {
+			font-size: 1em;
 		}*/
+
 		.bord_spot_legend{
 			text-align: center;
 		}
 		.bord_spot{
-			font-size:200%;
+			/*font-size:2em;*/
 			text-align: center;
 			border: 3px solid black;
-=======
-		.panel{
-			margin-top:10px;
-			margin-bottom:10px;
 		}
-		.form-group .checkbox label, .form-group .radio label, .form-group label {
-			font-size:1em;
-			font-weight: 300;
-			color: #333;
+		.bord_spot_span{
+			padding:5px;
 		}
-		html {
-			/*font-size: 20px;*/
-			font-size: 62.5%; /* default is 16px */
->>>>>>> bootstrap_google_materialize
-		}
-		body{
-			font-size:1.8em;
-			background-color: #F8F8F8 ;
-		}
-<<<<<<< HEAD
 		.bord_spot div{
 			background-color: lightblue;
 			width: 100%;
 			height: 100%;
 			padding: 10px;
+			cursor: pointer;
 		}
-=======
-
-
->>>>>>> bootstrap_google_materialize
+/*		body{
+			  font-size: 15px;
+		}
+		.card .card-title{
+			font-size:1.5em;
+		}*/
 	</style>
-
-</head>
+</header>
 <body>
 
-<<<<<<< HEAD
+
 <div class="row">
 	<div class="col s12 m12 l6">
 		<div class="card">
@@ -103,20 +82,20 @@
 			    		<td class="bord_spot_legend">A6</td>
 		  			</tr>
 		  			<tr>
-			    		<td class="bord_spot"><div id="A1"><span class="bord_spot_span">0</span></div></td>
-			    		<td class="bord_spot"><div id="A2"><span class="bord_spot_span">0</span></div></td> 
-			    		<td class="bord_spot"><div id="A3"><span class="bord_spot_span">0</span></div></td>
-			    		<td class="bord_spot"><div id="A4"><span class="bord_spot_span">0</span></div></td>
-			    		<td class="bord_spot"><div id="A5"><span class="bord_spot_span">0</span></div></td>
-			    		<td class="bord_spot"><div id="A6"><span class="bord_spot_span">0</span></div></td>
+			    		<td class="bord_spot"><div id="A1">0</div></td>
+			    		<td class="bord_spot"><div id="A2">0</div></td> 
+			    		<td class="bord_spot"><div id="A3">0</div></td>
+			    		<td class="bord_spot"><div id="A4">0</div></td>
+			    		<td class="bord_spot"><div id="A5">0</div></td>
+			    		<td class="bord_spot"><div id="A6">0</div></td>
 		  			</tr>
 		  			<tr>
-			    		<td class="bord_spot"><div id="B1"><span class="bord_spot_span">0</span></div></td>
-			    		<td class="bord_spot"><div id="B2"><span class="bord_spot_span">0</span></div></td> 
-			    		<td class="bord_spot"><div id="B3"><span class="bord_spot_span">0</span></div></td>
-			    		<td class="bord_spot"><div id="B4"><span class="bord_spot_span">0</span></div></td>
-			    		<td class="bord_spot"><div id="B5"><span class="bord_spot_span">0</span></div></td>
-			    		<td class="bord_spot"><div id="B6"><span class="bord_spot_span">0</span></div></td>
+			    		<td class="bord_spot"><div id="B1">0</div></td>
+			    		<td class="bord_spot"><div id="B2">0</div></td> 
+			    		<td class="bord_spot"><div id="B3">0</div></td>
+			    		<td class="bord_spot"><div id="B4">0</div></td>
+			    		<td class="bord_spot"><div id="B5">0</div></td>
+			    		<td class="bord_spot"><div id="B6">0</div></td>
 		  			</tr>
 		  			<tr>
 			    		<td class="bord_spot_legend">B1</td>
@@ -146,118 +125,42 @@
 		</div>
 		<div class="card">
 			<div class="card-content">
-				<span class="card-title" style="color:black;">Computer mode</span>
+				<span class="card-title" style="color:black;">Computer level</span>
 				<p>
 				  <form id="computer_mode_selection_form">
 				    <p>
 				      <input class="with-gap" name="group1" type="radio" id="pc_mode_random" checked="checked" onchange="pc_mode_selection(this.id)"/>
-				      <label for="pc_mode_random" style="color:black">Computer picks random moves</label>
+				      <label for="pc_mode_random" style="color:black">Idiot: Computer picks random moves</label>
 				    </p>
 				    <p>
-				      <input class="with-gap" name="group1" type="radio" id="pc_mode_stupid" disabled="disabled" onchange="pc_mode_selection(this.id)"/>
-				      <label for="pc_mode_stupid">Computer lets you win</label>
+				      <input class="with-gap" name="group1" type="radio" id="pc_mode_minimax" onchange="pc_mode_selection(this.id)" />
+				      <label for="pc_mode_minimax" style="color:black">Beginner: Minimax level 1</label>
 				    </p>
 				    <p>
-				      <input class="with-gap" name="group1" type="radio" id="pc_mode_minimax" onchange="pc_mode_selection(this.id)"/>
-				      <label for="pc_mode_minimax" style="color:black">Minimax level 1</label>
+				      <input class="with-gap" name="group1" type="radio" id="pc_mode_minimax_L2" onchange="pc_mode_selection(this.id)" disabled="disabled"/>
+				      <label for="pc_mode_minimax_L2">Expert: Minimax level 2</label>
+				    </p>
+				    <p>
+				      <input class="with-gap" name="group1" type="radio" id="pc_mode_minimax_L3" onchange="pc_mode_selection(this.id)" disabled="disabled"/>
+				      <label for="pc_mode_minimax_L3">Master: Minimax level 3</label>
 				    </p>
 				  </form>
 				</p>
-=======
-	<div class="container">
-		<div class="row">
-			<div class="col-sm-12">
-				<div class="panel panel-primary">
-					<div class="panel-heading" >About Mancala and the rules</div>
-					<div class="panel-body">
-
-						<p>The board game Mancala has many variations. For a full desicription of the game, please visit the <a href="https://en.wikipedia.org/wiki/Mancala">wiki</a> page. This implementation of the game is the easiest and most common one.</p>
-						<p>You are player A and the computer is player B. The numbers represent the amount of stones in a hole. At the beginning of your turn,  select one of the holes with stones at your side of the board. These stones will be seed. The seeding stones are dropped one-by-one into the subsequent holes, following a counter-clockwise rotation around the board. If the last of the seeding stones ends into an empty hole of the opponent, you capture the stones that are present in the opposite hole on your side. </p>
-						<p>When a player is out of stones or no other moves are possible, the player with most stones wins the game.</p>
-					</div>
-				</div>
-				<div class="panel panel-primary">
-
-					<div class="panel-heading" >Select computer level</div>
-					<div class="panel-body">
-						<div class="form-group">
-							<div class="radio radio-primary">
-			                    <label>
-			                      <input type="radio" name="optionsRadios" id="pc_mode_random" value="option1" checked="" onchange="pc_mode_selection(this.id)">
-			               			<span class="circle"></span>
-									<span class="check"></span>
-			                      Amateur: Computer picks random moves
-			                    </label>
-			                </div>
-			                <div class="radio radio-primary">
-			                    <label>
-			                      <input type="radio" name="optionsRadios" id="pc_mode_minimax" value="option2" onchange="pc_mode_selection(this.id)">
-			                      <span class="circle"></span>
-			                      <span class="check"></span>
-			                      Beginner: Minimax level 1
-			                    </label>
-			                </div>
-			            </div>
-					</div>
-				</div>
-				<div class="panel panel-primary">
-					<div class="panel-heading" >Board</div>
-					<div class="panel-body">
-						<table id="bord" style="width:100%">
-							<tr>
-								<td class="bord_spot_legend">A1</td>
-								<td class="bord_spot_legend">A2</td> 
-								<td class="bord_spot_legend">A3</td>
-								<td class="bord_spot_legend">A4</td>
-								<td class="bord_spot_legend">A5</td>
-								<td class="bord_spot_legend">A6</td>
-							</tr>
-							<tr>
-								<td class="bord_spot"><div id="A1">0</div></td>
-								<td class="bord_spot"><div id="A2">0</div></td> 
-								<td class="bord_spot"><div id="A3">0</div></td>
-								<td class="bord_spot"><div id="A4">0</div></td>
-								<td class="bord_spot"><div id="A5">0</div></td>
-								<td class="bord_spot"><div id="A6">0</div></td>
-							</tr>
-							<tr>
-								<td class="bord_spot"><div id="B1">0</div></td>
-								<td class="bord_spot"><div id="B2">0</div></td> 
-								<td class="bord_spot"><div id="B3">0</div></td>
-								<td class="bord_spot"><div id="B4">0</div></td>
-								<td class="bord_spot"><div id="B5">0</div></td>
-								<td class="bord_spot"><div id="B6">0</div></td>
-							</tr>
-							<tr>
-								<td class="bord_spot_legend">B1</td>
-								<td class="bord_spot_legend">B2</td> 
-								<td class="bord_spot_legend">B3</td>
-								<td class="bord_spot_legend">B4</td>
-								<td class="bord_spot_legend">B5</td>
-								<td class="bord_spot_legend">B6</td>
-							</tr>
-						</table>
-					</div>
-				</div>
 			</div>
-			<div class="col-sm-12">
-				<div class="panel panel-primary">
-					<div class="panel-heading" >Scores</div>
-					<div class="panel-body">	
-						<p>
-							Score player A: <span id="Score_playerA"></span><br>
-							Score player B: <span id="Score_playerB"></span><br>
-						</p>
-						<br>
-						<p>
-							Latest computer move: <span id="latest_computer_move"></span>
-						</p>
-					</div>
-				</div>
->>>>>>> bootstrap_google_materialize
+		</div>
+		<div class="card">
+			<div class="card-content">
+				<span class="card-title" style="color:black;">Rules</span>
+				<p>The board game Mancala has many variations. For a full desicription of the game, please visit the <a href="https://en.wikipedia.org/wiki/Mancala">wiki</a> page. This implementation of the game is the easiest and most common one.</p><br>
+				<p>You are player A and the computer is player B. The numbers represent the amount of stones in a hole. At the beginning of your turn,  select one of the holes with stones at your side of the board. These stones will be seed. The seeding stones are dropped one-by-one into the subsequent holes, following a counter-clockwise rotation around the board. If the last of the seeding stones ends into an empty hole of the opponent, you capture the stones that are present in the opposite hole on your side. </p><br>
+				<p>When a player is out of stones or no other moves are possible, the player with most stones wins the game.</p><br>
 			</div>
 		</div>
 	</div>
+</div>
+
+<p>
+</p>
 </body>
 
 <script>
@@ -338,16 +241,6 @@ Bord.prototype.move = function(selected_field_code, real_move_or_tree_building){
 		this.print_to_html();
 		this.set_next_player_to_move();
 		this.find_possible_moves();
-<<<<<<< HEAD
-		// If it is the computer, computer move, otherwise prepare board for human
-		if(this.player_to_move == 'B'){
-			score_tree = this.build_2_level_tree_minimax
-			console.log('Score tree is build')
-			score_tree = console.log(score_tree)
-
-			//Computer move, is random mode selected?
-/*			if(computer_mode == 'pc_mode_random'){
-=======
 		//If possible moves array is empty, game is over
 		if(this.possible_moves.length ==0){
 				if(this.score.Score_playerA > this.score.Score_playerB){
@@ -369,20 +262,10 @@ Bord.prototype.move = function(selected_field_code, real_move_or_tree_building){
 
 			//Computer move, is random mode selected?
 			if(computer_mode == 'pc_mode_random'){
->>>>>>> bootstrap_google_materialize
 				random_selected_field = this.possible_moves[Math.floor(Math.random()*this.possible_moves.length)];
 				this.move(random_selected_field, "real");
 				$('#latest_computer_move').text(random_selected_field)
 			}else if(computer_mode == 'pc_mode_minimax'){
-<<<<<<< HEAD
-				best_move = this.find_mini_max_move()
-				this.move(best_move, "real");
-				$('#latest_computer_move').text(best_move)
-			}*/
-
-			//Debugging
-			this.visualize_possible_moves();
-=======
 				// Minimax, so call function minimax that gives back random move
 				best_move = this.find_mini_max_move()
 				this.move(best_move, "real");
@@ -391,7 +274,6 @@ Bord.prototype.move = function(selected_field_code, real_move_or_tree_building){
 
 			//Debugging
 			//this.visualize_possible_moves();
->>>>>>> bootstrap_google_materialize
 
 		}else{
 			this.visualize_possible_moves();
@@ -402,66 +284,6 @@ Bord.prototype.move = function(selected_field_code, real_move_or_tree_building){
 	}
 }
 
-<<<<<<< HEAD
-// Build 2 level mini max tree, computer picks a move, player picks a move, all combinations of these two levels
-Bord.prototype.build_2_level_tree_minimax = function(current_level){
-	var score_tree = {}
-		console.log('This possible moves, dit is gewoon de computer zijn mogelijkheden')
-	console.log(this.possible_moves)
-	for(var i = 0; i < this.possible_moves.length; i++){
-		console.log('Inside loop, i = ' + i)
-		score_tree[this.possible_moves[i]] = {}
-		var virtual_bord = jQuery.extend(true, {}, this)
-		virtual_bord.move(virtual_bord.possible_moves[i], "tree_building")
-		console.log('Options if player B plays ' + this.possible_moves[i])
-		console.log(virtual_bord.possible_moves)
-		score_tree[this.possible_moves[i]]['score_L1'] = virtual_bord.score['playerB'] - virtual_bord.score['playerA'] 
-		for(var j=0; j < virtual_bord.possible_moves.length; j++){
-			var virtual_bord_L2 = jQuery.extend(true, {}, virtual_bord)
-			virtual_bord_L2.move(virtual_bord.possible_moves[j], "tree_building")
-
-			score_tree[this.possible_moves[i]][virtual_bord.possible_moves[j]]={'score_L2':virtual_bord_L2.score['playerB']-virtual_bord_L2.score['playerA']}
-			console.log('A plays: ' + virtual_bord.possible_moves[j] + ' Score A: ' + virtual_bord_L2.score['playerA'] + ' Score B: ' + virtual_bord_L2.score['playerB'])
-		}
-	}
-	console.log(score_tree)
-	return score_tree;
-}
-
-/*function Score_tree(){
-}
-
-Score_tree.prototype.toString(){	
-}*/
-
-
-// Should get an argument levels deep
-Bord.prototype.find_mini_max_move = function(){
-	// He already knows the next possible moves, which one should he pick?
-	console.log('Inside mini max')
-	var score_tree = {}
-	var max_score_L1;
-	var best_move;
-
-	for(var i = 0; i < this.possible_moves.length; i++){
-		console.log('Inside loop, i = ' + i)
-		score_tree[this.possible_moves[i]] = {}
-		var virtual_bord = jQuery.extend(true, {}, this)
-		virtual_bord.move(virtual_bord.possible_moves[i], "tree_building")
-		score_tree[virtual_bord.possible_moves[i]]['score_L1'] = virtual_bord.score['playerB'] - virtual_bord.score['playerA'] 
-		if(i == 0){
-			max_score_L1 = score_tree[virtual_bord.possible_moves[i]]['score_L1'];
-			best_move = virtual_bord.possible_moves[i];
-		}else{
-			if(score_tree[virtual_bord.possible_moves[i]]['score_L1'] > max_score_L1){
-				max_score_L1 = score_tree[virtual_bord.possible_moves[i]]['score_L1'];
-				best_move = virtual_bord.possible_moves[i];
-			}
-		}
-	}
-	console.log('This is the tree: ' + score_tree)
-	console.log('He choose best move: ' + best_move)
-=======
 // Find best option in a tree
 function find_best_move_in_tree_minimax(score_tree){
 	console.log('Find best move now')
@@ -566,7 +388,6 @@ Bord.prototype.find_mini_max_move = function(){
 	}
 	console.log(score_tree)
 	console.log(best_move)
->>>>>>> bootstrap_google_materialize
 	return best_move
 }
 Bord.prototype.remove_stones_conquered_and_update_score = function(){
@@ -628,12 +449,4 @@ main_bord.find_possible_moves();
 main_bord.visualize_possible_moves();
 </script>
 
-<<<<<<< HEAD
-=======
-
-
-
-
-</body>
->>>>>>> bootstrap_google_materialize
 </html>
