@@ -231,19 +231,20 @@ Bord.prototype.move = function(selected_field_code, real_move_or_tree_building){
 		this.find_possible_moves();
 		// If it is the computer, computer move, otherwise prepare board for human
 		if(this.player_to_move == 'B'){
-			score_tree = this.build_2_level_tree()
-			find_best_move_in_tree_minimax(score_tree)
+			//score_tree = this.build_2_level_tree()
+			
 
 			//Computer move, is random mode selected?
-/*			if(computer_mode == 'pc_mode_random'){
+			if(computer_mode == 'pc_mode_random'){
 				random_selected_field = this.possible_moves[Math.floor(Math.random()*this.possible_moves.length)];
 				this.move(random_selected_field, "real");
 				$('#latest_computer_move').text(random_selected_field)
 			}else if(computer_mode == 'pc_mode_minimax'){
+				// Minimax, so call function minimax that gives back random move
 				best_move = this.find_mini_max_move()
 				this.move(best_move, "real");
 				$('#latest_computer_move').text(best_move)
-			}*/
+			}
 
 			//Debugging
 			this.visualize_possible_moves();
@@ -291,36 +292,76 @@ Bord.prototype.build_2_level_tree = function(){
 	return score_tree;
 }
 
-/*function Score_tree(){
-}
-
-Score_tree.prototype.toString(){	
-}*/
-
 
 // Should get an argument levels deep
 Bord.prototype.find_mini_max_move = function(){
+
 	// He already knows the next possible moves, which one should he pick?
 	console.log('Inside mini max')
 	var score_tree = {}
-	var max_score_L1;
+	var best_score;
 	var best_move;
 
+	// Level 1: simulate through all the options of the computer
 	for(var i = 0; i < this.possible_moves.length; i++){
 		score_tree[this.possible_moves[i]] = {}
+		// 
 		var virtual_bord = jQuery.extend(true, {}, this)
+		// Move generation
 		virtual_bord.move(virtual_bord.possible_moves[i], "tree_building")
-		score_tree[virtual_bord.possible_moves[i]]['score_L1'] = virtual_bord.score['playerB'] - virtual_bord.score['playerA'] 
-		if(i == 0){
-			max_score_L1 = score_tree[virtual_bord.possible_moves[i]]['score_L1'];
-			best_move = virtual_bord.possible_moves[i];
-		}else{
-			if(score_tree[virtual_bord.possible_moves[i]]['score_L1'] > max_score_L1){
-				max_score_L1 = score_tree[virtual_bord.possible_moves[i]]['score_L1'];
-				best_move = virtual_bord.possible_moves[i];
+		// Register score
+		var temp_score = virtual_bord.score['playerB']-virtual_bord.score['playerA']
+		score_tree[this.possible_moves[i]]['score'] = temp_score
+		// Level 2: for each option of computer, calculate scores of other player, is stored in another score tree
+		var temp_score_tree = {}
+		var temp_minimizing_score;
+		for(var j=0; j < virtual_bord.possible_moves.length; j++){
+			// Create another virtual copy
+			var virtual_bord_L2 = jQuery.extend(true, {}, virtual_bord)
+			// Player A is playing again, so switch player
+			virtual_bord_L2.player_to_move = "A"
+			// Store in score tree
+			temp_score_tree[virtual_bord.possible_moves[j]] = {}
+			// Move generation
+			virtual_bord_L2.move(virtual_bord.possible_moves[j], "tree_building")
+			// Keep track of score
+			var temp_score = virtual_bord_L2.score['playerB']-virtual_bord_L2.score['playerA']
+			temp_score_tree[virtual_bord.possible_moves[j]]['score'] = temp_score
+			
+			// Keep track of best score, Assuming player A goes for Minimizing
+			if(j==0) {
+				temp_minimizing_score = temp_score
+			}else{
+				temp_minimizing_score = Math.min(temp_minimizing_score, temp_score)
 			}
 		}
+
+		score_tree[this.possible_moves[i]]['score_tree'] = temp_score_tree
+		score_tree[this.possible_moves[i]]['minimizing_score'] = temp_minimizing_score
+
+		// Keep track of best score, When player B is maximizing
+		if(i==0){
+			best_move = this.possible_moves[0]
+			best_score = temp_minimizing_score
+		}else{
+			if(temp_minimizing_score > best_score){
+				best_score = temp_minimizing_score
+				best_move = this.possible_moves[i]
+			}
+		}
+
+		// if(i == 0){
+		// 	max_score_L1 = score_tree[virtual_bord.possible_moves[i]]['score_L1'];
+		// 	best_move = virtual_bord.possible_moves[i];
+		// }else{
+		// 	if(score_tree[virtual_bord.possible_moves[i]]['score_L1'] > max_score_L1){
+		// 		max_score_L1 = score_tree[virtual_bord.possible_moves[i]]['score_L1'];
+		// 		best_move = virtual_bord.possible_moves[i];
+		// 	}
+		// }
 	}
+	console.log(score_tree)
+	console.log(best_move)
 	return best_move
 }
 Bord.prototype.remove_stones_conquered_and_update_score = function(){
