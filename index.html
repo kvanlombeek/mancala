@@ -233,10 +233,24 @@ Bord.prototype.move = function(selected_field_code, real_move_or_tree_building){
 		this.print_to_html();
 		this.set_next_player_to_move();
 		this.find_possible_moves();
+		//If possible moves array is empty, game is over
+		if(this.possible_moves.length ==0){
+				if(this.Score_playerA > this.Score_playerB){
+					$("#Score_playerA").text('Winner!')
+					$("#Score_playerB").text('Loser...')
+				}else if(this.Score_playerA < this.Score_playerB){
+					$("#Score_playerB").text('Winner!')
+					$("#Score_playerA").text('Loser...')
+				}else if(this.Score_playerA == this.Score_playerB){
+					$("#Score_playerB").text('Draw')
+					$("#Score_playerA").text('Draw')
+				}
+			return
+		}
 		// If it is the computer, computer move, otherwise prepare board for human
 		if(this.player_to_move == 'B'){
 			//score_tree = this.build_2_level_tree()
-			
+
 
 			//Computer move, is random mode selected?
 			if(computer_mode == 'pc_mode_random'){
@@ -251,7 +265,7 @@ Bord.prototype.move = function(selected_field_code, real_move_or_tree_building){
 			}
 
 			//Debugging
-			this.visualize_possible_moves();
+			//this.visualize_possible_moves();
 
 		}else{
 			this.visualize_possible_moves();
