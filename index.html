@@ -240,13 +240,13 @@ Bord.prototype.move = function(selected_field_code, real_move_or_tree_building){
 		this.find_possible_moves();
 		//If possible moves array is empty, game is over
 		if(this.possible_moves.length ==0){
-				if(this.score.Score_playerA > this.score.Score_playerB){
+				if(this.score.playerA > this.score.playerB){
 					$("#Score_playerA").text('Winner!')
 					$("#Score_playerB").text('Loser...')
-				}else if(this.Score_playerA < this.Score_playerB){
+				}else if(this.score.playerA < this.score.playerB){
 					$("#Score_playerB").text('Winner!')
 					$("#Score_playerA").text('Loser...')
-				}else if(this.Score_playerA == this.Score_playerB){
+				}else if(this.score.playerA == this.score.playerB){
 					$("#Score_playerB").text('Draw')
 					$("#Score_playerA").text('Draw')
 				}
