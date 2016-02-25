@@ -1,18 +1,48 @@
 <html>
 <header>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Makala</title>
 	<script type="text/javascript" src="javascript/jquery.js"></script>
 	<link type="text/css" rel="stylesheet" href="materialize/css/materialize.min.css"  media="screen,projection"/>
 	<script type="text/javascript" src="materialize/js/materialize.min.js"></script>
 	<style>
-/*		body{
-			font-family: monospace;
+		html {
+			/*font-size: 20px;*/
+			font-size: 62.5%; /* default is 16px */
+		}
+		body{
+			font-size: 2.1em;
+			line-height: 1.3;
+		}
+		@media (min-width: 500px) {
+			body {
+				font-size: 1.8em;
+			}
+		}
+/*
+		@media (min-width: 500px) {
+			body {
+				font-size: 1.6em;
+			}
+		}
+
+
+		<div><p><a></a></p></div>
+		div {
+			width: 2em;
+		}
+		p {
+			font-size: 1.5em;
+		}
+		a {
+			font-size: 1em;
 		}*/
+
 		.bord_spot_legend{
 			text-align: center;
 		}
 		.bord_spot{
-			font-size:200%;
+			/*font-size:2em;*/
 			text-align: center;
 			border: 3px solid black;
 		}
@@ -26,6 +56,12 @@
 			padding: 10px;
 			cursor: pointer;
 		}
+/*		body{
+			  font-size: 15px;
+		}
+		.card .card-title{
+			font-size:1.5em;
+		}*/
 	</style>
 </header>
 <body>
@@ -195,9 +231,8 @@ Bord.prototype.move = function(selected_field_code, real_move_or_tree_building){
 		this.find_possible_moves();
 		// If it is the computer, computer move, otherwise prepare board for human
 		if(this.player_to_move == 'B'){
-			score_tree = this.build_2_level_tree_minimax
-			console.log('Score tree is build')
-			score_tree = console.log(score_tree)
+			score_tree = this.build_2_level_tree()
+			find_best_move_in_tree_minimax(score_tree)
 
 			//Computer move, is random mode selected?
 /*			if(computer_mode == 'pc_mode_random'){
@@ -222,28 +257,37 @@ Bord.prototype.move = function(selected_field_code, real_move_or_tree_building){
 	}
 }
 
+// Find best option in a tree
+function find_best_move_in_tree_minimax(score_tree){
+	console.log('Find best move now')
+	for (var L1_move in score_tree) {
+		console.log('Option L1 move: ' + L1_move + ' with score ' +  score_tree[L1_move]['score_L1'])
+    	console.log(score_tree[L1_move]);
+    	//for(var L2_move in score_tree[L1_move])
+    	//	if()
+	}
+
+}
+
 // Build 2 level mini max tree, computer picks a move, player picks a move, all combinations of these two levels
-Bord.prototype.build_2_level_tree_minimax = function(current_level){
+Bord.prototype.build_2_level_tree = function(){
 	var score_tree = {}
-		console.log('This possible moves, dit is gewoon de computer zijn mogelijkheden')
 	console.log(this.possible_moves)
 	for(var i = 0; i < this.possible_moves.length; i++){
-		console.log('Inside loop, i = ' + i)
 		score_tree[this.possible_moves[i]] = {}
 		var virtual_bord = jQuery.extend(true, {}, this)
 		virtual_bord.move(virtual_bord.possible_moves[i], "tree_building")
-		console.log('Options if player B plays ' + this.possible_moves[i])
-		console.log(virtual_bord.possible_moves)
 		score_tree[this.possible_moves[i]]['score_L1'] = virtual_bord.score['playerB'] - virtual_bord.score['playerA'] 
 		for(var j=0; j < virtual_bord.possible_moves.length; j++){
+
 			var virtual_bord_L2 = jQuery.extend(true, {}, virtual_bord)
+			// Player A is playing again, so switch player
+			virtual_bord_L2.player_to_move = "A"
 			virtual_bord_L2.move(virtual_bord.possible_moves[j], "tree_building")
 
 			score_tree[this.possible_moves[i]][virtual_bord.possible_moves[j]]={'score_L2':virtual_bord_L2.score['playerB']-virtual_bord_L2.score['playerA']}
-			console.log('A plays: ' + virtual_bord.possible_moves[j] + ' Score A: ' + virtual_bord_L2.score['playerA'] + ' Score B: ' + virtual_bord_L2.score['playerB'])
 		}
 	}
-	console.log(score_tree)
 	return score_tree;
 }
 
@@ -263,7 +307,6 @@ Bord.prototype.find_mini_max_move = function(){
 	var best_move;
 
 	for(var i = 0; i < this.possible_moves.length; i++){
-		console.log('Inside loop, i = ' + i)
 		score_tree[this.possible_moves[i]] = {}
 		var virtual_bord = jQuery.extend(true, {}, this)
 		virtual_bord.move(virtual_bord.possible_moves[i], "tree_building")
@@ -278,8 +321,6 @@ Bord.prototype.find_mini_max_move = function(){
 			}
 		}
 	}
-	console.log('This is the tree: ' + score_tree)
-	console.log('He choose best move: ' + best_move)
 	return best_move
 }
 Bord.prototype.remove_stones_conquered_and_update_score = function(){
