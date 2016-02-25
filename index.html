@@ -249,8 +249,8 @@ Bord.prototype.move = function(selected_field_code, real_move_or_tree_building){
 				}else if(this.score.playerA == this.score.playerB){
 					$("#Score_playerB").text('Draw')
 					$("#Score_playerA").text('Draw')
+					return
 				}
-			return
 		}
 		// If it is the computer, computer move, otherwise prepare board for human
 		if(this.player_to_move == 'B'){
