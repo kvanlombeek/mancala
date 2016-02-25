@@ -1,163 +1,166 @@
-<!DOCTYPE html>
-
 <html>
-
-<head>
-  <title>Mancala</title>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
-  <!-- Mobile support -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- Material Design fonts -->
-  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-  <!-- Bootstrap -->
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Bootstrap Material Design -->
-  <link href="bootstrap/dist/css/bootstrap-material-design.css" rel="stylesheet">
-  <link href="bootstrap/dist/css/ripples.min.css" rel="stylesheet">
-
-  <!-- Dropdown.js -->
-  <link href="https://cdn.rawgit.com/FezVrasta/dropdown.js/master/jquery.dropdown.css" rel="stylesheet">
-
-  <!-- Page style -->
-  <link href="bootstrap/index.css" rel="stylesheet">
-
-  <!-- jQuery -->
-  <script type="text/javascript" src="javascript/jquery.js"></script>
-
-  <!-- Twitter Bootstrap -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
-
-	<!-- Material Design for Bootstrap -->
-	<script src="bootstrap/dist/js/material.js"></script>
-	<script src="bootstrap/dist/js/ripples.min.js"></script>
-	<script> 
-	$.material.init();
-	</script>
-
+<header>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Makala</title>
+	<script type="text/javascript" src="javascript/jquery.js"></script>
+	<link type="text/css" rel="stylesheet" href="materialize/css/materialize.min.css"  media="screen,projection"/>
+	<script type="text/javascript" src="materialize/js/materialize.min.js"></script>
 	<style>
-		.panel{
-			margin-top:10px;
-			margin-bottom:10px;
-		}
-		.form-group .checkbox label, .form-group .radio label, .form-group label {
-			font-size:1em;
-			font-weight: 300;
-			color: #333;
-		}
 		html {
 			/*font-size: 20px;*/
-			font-size: 62.5%; /* default is 16px */
+			font-size: 100%; /* default is 16px */
 		}
 		body{
-			font-size:1.8em;
-			background-color: #F8F8F8 ;
+			/*font-size: 2.1em;*/
+			line-height: 1.3;
+		}
+		@media (max-device-width: 480px) {
+			body {
+				font-size: 1.8em;
+			}
+		}
+/*
+		@media (min-width: 500px) {
+			body {
+				font-size: 1.6em;
+			}
 		}
 
 
-	</style>
+		<div><p><a></a></p></div>
+		div {
+			width: 2em;
+		}
+		p {
+			font-size: 1.5em;
+		}
+		a {
+			font-size: 1em;
+		}*/
 
-</head>
+		.bord_spot_legend{
+			text-align: center;
+		}
+		.bord_spot{
+			/*font-size:2em;*/
+			text-align: center;
+			border: 3px solid black;
+		}
+		.bord_spot_span{
+			padding:5px;
+		}
+		.bord_spot div{
+			background-color: lightblue;
+			width: 100%;
+			height: 100%;
+			padding: 10px;
+			cursor: pointer;
+		}
+/*		body{
+			  font-size: 15px;
+		}
+		.card .card-title{
+			font-size:1.5em;
+		}*/
+	</style>
+</header>
 <body>
 
-	<div class="container">
-		<div class="row">
-			<div class="col-sm-12">
-				<div class="panel panel-primary">
-					<div class="panel-heading" >About Mancala and the rules</div>
-					<div class="panel-body">
 
-						<p>The board game Mancala has many variations. For a full desicription of the game, please visit the <a href="https://en.wikipedia.org/wiki/Mancala">wiki</a> page. This implementation of the game is the easiest and most common one.</p>
-						<p>You are player A and the computer is player B. The numbers represent the amount of stones in a hole. At the beginning of your turn,  select one of the holes with stones at your side of the board. These stones will be seed. The seeding stones are dropped one-by-one into the subsequent holes, following a counter-clockwise rotation around the board. If the last of the seeding stones ends into an empty hole of the opponent, you capture the stones that are present in the opposite hole on your side. </p>
-						<p>When a player is out of stones or no other moves are possible, the player with most stones wins the game.</p>
-					</div>
-				</div>
-				<div class="panel panel-primary">
-
-					<div class="panel-heading" >Select computer level</div>
-					<div class="panel-body">
-						<div class="form-group">
-							<div class="radio radio-primary">
-			                    <label>
-			                      <input type="radio" name="optionsRadios" id="pc_mode_random" value="option1" checked="" onchange="pc_mode_selection(this.id)">
-			               			<span class="circle"></span>
-									<span class="check"></span>
-			                      Amateur: Computer picks random moves
-			                    </label>
-			                </div>
-			                <div class="radio radio-primary">
-			                    <label>
-			                      <input type="radio" name="optionsRadios" id="pc_mode_minimax" value="option2" onchange="pc_mode_selection(this.id)">
-			                      <span class="circle"></span>
-			                      <span class="check"></span>
-			                      Beginner: Minimax level 1
-			                    </label>
-			                </div>
-			            </div>
-					</div>
-				</div>
-				<div class="panel panel-primary">
-					<div class="panel-heading" >Board</div>
-					<div class="panel-body">
-						<table id="bord" style="width:100%">
-							<tr>
-								<td class="bord_spot_legend">A1</td>
-								<td class="bord_spot_legend">A2</td> 
-								<td class="bord_spot_legend">A3</td>
-								<td class="bord_spot_legend">A4</td>
-								<td class="bord_spot_legend">A5</td>
-								<td class="bord_spot_legend">A6</td>
-							</tr>
-							<tr>
-								<td class="bord_spot"><div id="A1">0</div></td>
-								<td class="bord_spot"><div id="A2">0</div></td> 
-								<td class="bord_spot"><div id="A3">0</div></td>
-								<td class="bord_spot"><div id="A4">0</div></td>
-								<td class="bord_spot"><div id="A5">0</div></td>
-								<td class="bord_spot"><div id="A6">0</div></td>
-							</tr>
-							<tr>
-								<td class="bord_spot"><div id="B1">0</div></td>
-								<td class="bord_spot"><div id="B2">0</div></td> 
-								<td class="bord_spot"><div id="B3">0</div></td>
-								<td class="bord_spot"><div id="B4">0</div></td>
-								<td class="bord_spot"><div id="B5">0</div></td>
-								<td class="bord_spot"><div id="B6">0</div></td>
-							</tr>
-							<tr>
-								<td class="bord_spot_legend">B1</td>
-								<td class="bord_spot_legend">B2</td> 
-								<td class="bord_spot_legend">B3</td>
-								<td class="bord_spot_legend">B4</td>
-								<td class="bord_spot_legend">B5</td>
-								<td class="bord_spot_legend">B6</td>
-							</tr>
-						</table>
-					</div>
-				</div>
-			</div>
-			<div class="col-sm-12">
-				<div class="panel panel-primary">
-					<div class="panel-heading" >Scores</div>
-					<div class="panel-body">	
-						<p>
-							Score player A: <span id="Score_playerA"></span><br>
-							Score player B: <span id="Score_playerB"></span><br>
-						</p>
-						<br>
-						<p>
-							Latest computer move: <span id="latest_computer_move"></span>
-						</p>
-					</div>
-				</div>
+<div class="row">
+	<div class="col s12 m12 l6">
+		<div class="card">
+			<div class="card-content">
+				<span class="card-title" style="color:black;">Bord</span>
+				<table id="bord" style="width:100%">
+					<tr>
+			    		<td class="bord_spot_legend">A1</td>
+			    		<td class="bord_spot_legend">A2</td> 
+			    		<td class="bord_spot_legend">A3</td>
+			    		<td class="bord_spot_legend">A4</td>
+			    		<td class="bord_spot_legend">A5</td>
+			    		<td class="bord_spot_legend">A6</td>
+		  			</tr>
+		  			<tr>
+			    		<td class="bord_spot"><div id="A1">0</div></td>
+			    		<td class="bord_spot"><div id="A2">0</div></td> 
+			    		<td class="bord_spot"><div id="A3">0</div></td>
+			    		<td class="bord_spot"><div id="A4">0</div></td>
+			    		<td class="bord_spot"><div id="A5">0</div></td>
+			    		<td class="bord_spot"><div id="A6">0</div></td>
+		  			</tr>
+		  			<tr>
+			    		<td class="bord_spot"><div id="B1">0</div></td>
+			    		<td class="bord_spot"><div id="B2">0</div></td> 
+			    		<td class="bord_spot"><div id="B3">0</div></td>
+			    		<td class="bord_spot"><div id="B4">0</div></td>
+			    		<td class="bord_spot"><div id="B5">0</div></td>
+			    		<td class="bord_spot"><div id="B6">0</div></td>
+		  			</tr>
+		  			<tr>
+			    		<td class="bord_spot_legend">B1</td>
+			    		<td class="bord_spot_legend">B2</td> 
+			    		<td class="bord_spot_legend">B3</td>
+			    		<td class="bord_spot_legend">B4</td>
+			    		<td class="bord_spot_legend">B5</td>
+			    		<td class="bord_spot_legend">B6</td>
+		  			</tr>
+				</table>
 			</div>
 		</div>
 	</div>
+	<div class="col s12 m12 l6">
+		<div class="card">
+			<div class="card-content">
+				<span class="card-title" style="color:black;">Gameplay</span>
+				<p>
+					Score player A: <span id="Score_playerA"></span><br>
+					Score player B: <span id="Score_playerB"></span><br>
+				</p>
+				<br>
+				<p>
+					Latest computer move: <span id="latest_computer_move"></span>
+				</p>
+			</div>
+		</div>
+		<div class="card">
+			<div class="card-content">
+				<span class="card-title" style="color:black;">Computer level</span>
+				<p>
+				  <form id="computer_mode_selection_form">
+				    <p>
+				      <input class="with-gap" name="group1" type="radio" id="pc_mode_random" checked="checked" onchange="pc_mode_selection(this.id)"/>
+				      <label for="pc_mode_random" style="color:black">Idiot: Computer picks random moves</label>
+				    </p>
+				    <p>
+				      <input class="with-gap" name="group1" type="radio" id="pc_mode_minimax" onchange="pc_mode_selection(this.id)" />
+				      <label for="pc_mode_minimax" style="color:black">Beginner: Minimax level 1</label>
+				    </p>
+				    <p>
+				      <input class="with-gap" name="group1" type="radio" id="pc_mode_minimax_L2" onchange="pc_mode_selection(this.id)" disabled="disabled"/>
+				      <label for="pc_mode_minimax_L2">Expert: Minimax level 2</label>
+				    </p>
+				    <p>
+				      <input class="with-gap" name="group1" type="radio" id="pc_mode_minimax_L3" onchange="pc_mode_selection(this.id)" disabled="disabled"/>
+				      <label for="pc_mode_minimax_L3">Master: Minimax level 3</label>
+				    </p>
+				  </form>
+				</p>
+			</div>
+		</div>
+		<div class="card">
+			<div class="card-content">
+				<span class="card-title" style="color:black;">Rules</span>
+				<p>The board game Mancala has many variations. For a full desicription of the game, please visit the <a href="https://en.wikipedia.org/wiki/Mancala">wiki</a> page. This implementation of the game is the easiest and most common one.</p><br>
+				<p>You are player A and the computer is player B. The numbers represent the amount of stones in a hole. At the beginning of your turn,  select one of the holes with stones at your side of the board. These stones will be seed. The seeding stones are dropped one-by-one into the subsequent holes, following a counter-clockwise rotation around the board. If the last of the seeding stones ends into an empty hole of the opponent, you capture the stones that are present in the opposite hole on your side. </p><br>
+				<p>When a player is out of stones or no other moves are possible, the player with most stones wins the game.</p><br>
+			</div>
+		</div>
+	</div>
+</div>
+
+<p>
+</p>
 </body>
 
 <script>
@@ -446,9 +449,4 @@ main_bord.find_possible_moves();
 main_bord.visualize_possible_moves();
 </script>
 
-
-
-
-
-</body>
 </html>
