@@ -142,10 +142,26 @@
 			                </div>
 			                <div class="radio radio-primary">
 			                    <label>
-			                      <input type="radio" name="optionsRadios" id="pc_mode_minimax" value="option2" onchange="pc_mode_selection(this.id)">
+			                      <input type="radio" name="optionsRadios" id="pc_mode_minimax_L1" value="option2" onchange="pc_mode_selection(this.id)">
 			                      <span class="circle"></span>
 			                      <span class="check"></span>
-			                      Beginner: Minimax level 1
+			                      Beginner: Minimax two levels deep
+			                    </label>
+			                </div>
+			                <div class="radio radio-primary">
+			                    <label>
+			                      <input type="radio" name="optionsRadios" id="pc_mode_minimax_L2" value="option2" onchange="pc_mode_selection(this.id)">
+			                      <span class="circle"></span>
+			                      <span class="check"></span>
+			                      Pretty hard: Minimax four levels deep
+			                    </label>
+			                </div>
+			                <div class="radio radio-primary">
+			                    <label>
+			                      <input type="radio" name="optionsRadios" id="pc_mode_minimax_L3" value="option2" onchange="pc_mode_selection(this.id)">
+			                      <span class="circle"></span>
+			                      <span class="check"></span>
+			                      Expert: Minimax six levels deep
 			                    </label>
 			                </div>
 			            </div>
@@ -240,9 +256,8 @@
 </body>
 
 <script>
-var computer_mode = 'pc_mode_random' 
+var computer_mode = 'pc_mode_minimax_L2' 
 function pc_mode_selection(mode_selected){
-	console.log('test')
 	console.log(mode_selected)
 	computer_mode = mode_selected
 }
@@ -292,7 +307,6 @@ Bord.prototype.visualize_possible_moves = function(){
 	}, this)
 }
 Bord.prototype.visualize_best_move_computer = function(){
-	console.log('Now visualize next computer move: ' + this.next_computer_move)
 	this.field_names.forEach(function(field_name, field_position){
 		css_name = "#" + field_name
 		if(this.next_computer_move == field_name){
@@ -314,6 +328,8 @@ function correct_button_clicked(click_event){
 function false_button_clicked(){
 }
 Bord.prototype.move = function(selected_field_code, real_move_or_tree_building){
+	// Counter for the moves generated
+	moves_generated += 1
 	// Decode selected field to position
 	selected_field_position = this.field_names.indexOf(selected_field_code)
 	selected_field_value = this.field_values[selected_field_position]
@@ -387,13 +403,15 @@ Bord.prototype.move = function(selected_field_code, real_move_or_tree_building){
 			if(computer_mode == 'pc_mode_random'){
 				// Generate random computer move
 				this.next_computer_move = this.possible_moves[Math.floor(Math.random()*this.possible_moves.length)];
-				//this.move(random_selected_field, "real");
-				//$('#latest_computer_move').text(random_selected_field)
-			}else if(computer_mode == 'pc_mode_minimax'){
-				// Minimax, so call function minimax that gives back random move
-				this.next_computer_move = this.find_mini_max_move()
-				//this.move(best_move, "real");
-				//$('#latest_computer_move').text(best_move)
+			}else if(computer_mode == 'pc_mode_minimax_L1'){
+				// Minimax, so call function minimax that gives back best move
+				this.next_computer_move = this.find_mini_max_move(2)
+			}else if(computer_mode == 'pc_mode_minimax_L2'){
+				// Minimax, so call function minimax that gives back best move
+				this.next_computer_move = this.find_mini_max_move(4)
+			}else if(computer_mode == 'pc_mode_minimax_L3'){
+				// Minimax, so call function minimax that gives back best move
+				this.next_computer_move = this.find_mini_max_move(6)
 			}
 			this.visualize_best_move_computer();
 		}else{
@@ -442,14 +460,14 @@ Bord.prototype.allocate_stones_to_stores_end_of_game = function(){
 	}
 }
 
-// Should get an argument levels deep
-Bord.prototype.find_mini_max_move = function(){
-
+Bord.prototype.build_X_level_moves = function(X_levels){
 	// He already knows the next possible moves, which one should he pick?
 	var score_tree = {}
-	var best_score;
+	// If there are no moves left, the current score is the best one
+	var best_score = this.score['playerB'] - this.score['playerA']
 	var best_move;
 
+	if(this.possible_moves.length == 0) console.log('He is at a dead end of player B')
 	// Level 1: simulate through all the options of the computer
 	for(var i = 0; i < this.possible_moves.length; i++){
 		score_tree[this.possible_moves[i]] = {}
@@ -461,26 +479,36 @@ Bord.prototype.find_mini_max_move = function(){
 		var temp_score = virtual_bord.score['playerB']-virtual_bord.score['playerA']
 		score_tree[this.possible_moves[i]]['score'] = temp_score
 		// Level 2: for each option of computer, calculate scores of other player, is stored in another score tree
+		// If there are no other moves left, the current score is also the minimizing score
 		var temp_score_tree = {}
-		var temp_minimizing_score;
+		var temp_minimizing_score = temp_score
+		if( virtual_bord.possible_moves.length == 0) console.log('He is at a dead end of player A')
 		for(var j=0; j < virtual_bord.possible_moves.length; j++){
 			// Create another virtual copy
 			var virtual_bord_L2 = jQuery.extend(true, {}, virtual_bord)
 			// Player A is playing again, so switch player
 			virtual_bord_L2.player_to_move = "A"
-			// Store in score tree
-			temp_score_tree[virtual_bord.possible_moves[j]] = {}
 			// Move generation
 			virtual_bord_L2.move(virtual_bord.possible_moves[j], "tree_building")
 			// Keep track of score
-			var temp_score = virtual_bord_L2.score['playerB']-virtual_bord_L2.score['playerA']
-			temp_score_tree[virtual_bord.possible_moves[j]]['score'] = temp_score
-			
+			if(X_levels == 2){
+				// Score is now just the difference between the scores of the two players
+				var temp_score = virtual_bord_L2.score['playerB']-virtual_bord_L2.score['playerA']
+				// Store in uniform object X_level_moves
+				temp_score_tree[virtual_bord.possible_moves[j]] = {}
+				temp_score_tree[virtual_bord.possible_moves[j]]['best_score'] = temp_score
+			}else if(X_levels ==4){
+				// He needs to generate again a 2 level tree, recursive
+				temp_score_tree[virtual_bord.possible_moves[j]] = virtual_bord_L2.build_X_level_moves(2)
+			}else if(X_levels == 6){
+				// He needs to generate again a 2 level tree, recursive
+				temp_score_tree[virtual_bord.possible_moves[j]] = virtual_bord_L2.build_X_level_moves(4)				
+			}
 			// Keep track of best score, Assuming player A goes for Minimizing
 			if(j==0) {
-				temp_minimizing_score = temp_score
+				temp_minimizing_score = temp_score_tree[virtual_bord.possible_moves[j]]['best_score']
 			}else{
-				temp_minimizing_score = Math.min(temp_minimizing_score, temp_score)
+				temp_minimizing_score = Math.min(temp_minimizing_score, temp_score_tree[virtual_bord.possible_moves[j]]['best_score'])
 			}
 		}
 
@@ -492,16 +520,36 @@ Bord.prototype.find_mini_max_move = function(){
 			best_move = this.possible_moves[0]
 			best_score = temp_minimizing_score
 		}else{
-			if(temp_minimizing_score >= best_score){
+			if(temp_minimizing_score > best_score){
 				best_score = temp_minimizing_score
 				best_move = this.possible_moves[i]
 			}
 		}
 	}
-	console.log('Score tree:')
-	console.log(score_tree)
+
+	// Resultaat goed formatten en returnen
+	var X_level_moves = {}
+	X_level_moves['best_move'] = best_move
+	X_level_moves['best_score'] = best_score
+	X_level_moves['score_tree'] = score_tree
+	return X_level_moves
+}
+
+var moves_generated;
+// Should get an argument levels deep
+Bord.prototype.find_mini_max_move = function(levels){
+	moves_generated = 0;
+	//console.log('Beginning of find mini max, with levels: ' + levels)
+	X_level_moves = this.build_X_level_moves(levels)
+	//console.log('X_level moves: ')
+	//console.log(X_level_moves)
+	best_move = X_level_moves['best_move']
+	console.log('Moves generated: ' + moves_generated)
 	return best_move
 }
+
+
+
 Bord.prototype.remove_stones_conquered_and_update_score = function(){
 	
 	// First check, the last stone must be landed in the other player his array
