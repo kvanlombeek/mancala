@@ -93,7 +93,6 @@
 	    	outline: 1.5px solid black;
 	    }
 	    .board_hole_td div{
-	    	background-color: green;
 	    	width: 100%;
 	        height: 100%;
 	        padding: 5px;
@@ -157,7 +156,7 @@
 					<div class="panel-body">
 						<table id="board" style="width:100%">
 							<tr>
-								<td class="board_player_info">Human</td>
+								<td class="board_player_info" id="board_human_legend">Human</td>
 							</tr>
 							<tr>
 								<td class="board_holes">
@@ -230,26 +229,11 @@
 								</td>
 							</tr>
 							<tr>
-								<td class="board_player_info">Computer</td>
+								<td class="board_player_info" id="board_computer_legend">Computer</td>
 							</tr>
 						</table>
 					</div>
 				</div>				
-			</div>
-			<div class="col-sm-12">
-				<div class="panel panel-primary">
-					<div class="panel-heading" >Scores</div>
-					<div class="panel-body">	
-						<p>
-							Score player A: <span id="Score_playerA"></span><br>
-							Score player B: <span id="Score_playerB"></span><br>
-						</p>
-						<br>
-						<p>
-							Latest computer move: <span id="latest_computer_move"></span>
-						</p>
-					</div>
-				</div>
 			</div>
 		</div>
 	</div>
@@ -265,8 +249,8 @@ function pc_mode_selection(mode_selected){
 function Bord(){
 	this.score = {"playerA": 0 , "playerB":0}
 	
-	this.field_names = ["A6", "A5", "A4", "A3", "A2", "A1", "B1", "B2", "B3", "B4", "B5", "B6"]
-	this.field_values = [2,2,2,2,2,2,2,2,2,2,2,2]
+	this.field_names = ["A6", "A5", "A4", "A3", "A2", "A1", "A_store","B1", "B2", "B3", "B4", "B5", "B6", "B_store"]
+	this.field_values = [4,4,4,4,4,4,0,4,4,4,4,4,4,0]
 	
 	this.player_to_move = "A"
 	this.possible_moves = []
@@ -277,6 +261,11 @@ Bord.prototype.find_possible_moves = function(){
 	
 	// Create an array with the possible moves
 	this.possible_moves = this.field_names
+	// Filter out the stores
+	this.possible_moves = this.possible_moves.filter(function(field_name){
+		return field_name.indexOf("store") == -1
+	}, this)
+
 	// Filter, the current player should be in the field name
 	this.possible_moves = this.possible_moves.filter(function(field_name){
 		return field_name.indexOf(this.player_to_move) != -1
@@ -332,14 +321,40 @@ Bord.prototype.move = function(selected_field_code, real_move_or_tree_building){
 	var stones_to_distribute = selected_field_value
 	// Set initial selected fields to zero
 	this.field_values[selected_field_position] = 0
-	
-	// Distribute the stones
-	for(var i=1; i <= stones_to_distribute; i++ ){
+
+	// Distribute the stones, i is the counter to loop over the holes
+	var i = 1
+	var stones_distributed = 0
+	while (stones_distributed < stones_to_distribute) {
+		// Look at next vield
 		board_field_to_fill = selected_field_position + i;
-		if(board_field_to_fill > 11)
-			board_field_to_fill = board_field_to_fill - 12;
-		this.field_values[board_field_to_fill] +=1 
+		if(board_field_to_fill > 13)
+	 		board_field_to_fill = board_field_to_fill - 14;
+		// If it is a store, check if it is not the store of the opponent
+		if(board_field_to_fill == 6 | board_field_to_fill == 13){
+			if(this.field_names[board_field_to_fill].indexOf(this.player_to_move) == -1){
+				// No stone is laid in the other hole, so don't substract a stone of the total stones to be distributed
+				i++;
+			}else{
+				// Stone is laid in his own store
+				this.field_values[board_field_to_fill] +=1 
+				stones_distributed++;
+				// Update the score by one, because the player scored by adding one to his store
+				if(this.player_to_move == "A"){
+				 	this.score["playerA"] += 1
+				}else if(this.player_to_move == "B"){
+				 	this.score["playerB"] += 1
+				}			
+				i++;
+			}
+		}else{
+			//Normal hole
+			this.field_values[board_field_to_fill] +=1 
+			stones_distributed++;
+			i++;
+		}
 	}
+
 	// Remember after the loop where the last stone landed, this is important to calculate the scores
 	this.last_stone_landed = this.field_names[board_field_to_fill]
 	// Calculate scores
@@ -352,15 +367,17 @@ Bord.prototype.move = function(selected_field_code, real_move_or_tree_building){
 		this.find_possible_moves();
 		//If possible moves array is empty, game is over
 		if(this.possible_moves.length ==0){
+			this.allocate_stones_to_stores_end_of_game();
+			this.print_to_html()
 				if(this.score.playerA > this.score.playerB){
-					$("#Score_playerA").text('Winner!')
-					$("#Score_playerB").text('Loser...')
+					$("#board_human_legend").text('Player A won with ' + this.score.playerA + " seeds")
+					$("#board_computer_legend").text('Player B lost with '+ this.score.playerB + " seeds")
 				}else if(this.score.playerA < this.score.playerB){
-					$("#Score_playerB").text('Winner!')
-					$("#Score_playerA").text('Loser...')
+					$("#board_computer_legend").text('Player B won with ' + this.score.playerB + " seeds")
+					$("#board_human_legend").text('Player A lost with '+ this.score.playerA + " seeds")
 				}else if(this.score.playerA == this.score.playerB){
-					$("#Score_playerB").text('Draw')
-					$("#Score_playerA").text('Draw')
+					$("#board_computer_legend").text('Draw')
+					$("#board_human_legend").text('Draw')
 					return
 				}			
 		}
@@ -386,6 +403,42 @@ Bord.prototype.move = function(selected_field_code, real_move_or_tree_building){
 	}else if(real_move_or_tree_building == "tree_building"){
 		this.set_next_player_to_move();
 		this.find_possible_moves();
+		if(this.possible_moves.length ==0){
+			//End of game
+			this.allocate_stones_to_stores_end_of_game();	
+		}
+	}
+}
+
+Bord.prototype.allocate_stones_to_stores_end_of_game = function(){
+	console.log('Inside end of game')
+	var fields_to_allocate = this.field_names
+	// Filter, not the stores
+	fields_to_allocate = fields_to_allocate.filter(function(field_name){
+		if(field_name.indexOf("store") == -1) return true
+	},this)
+	// Loop over the fields, give stones to the store of correct player and update the scores
+	for(var i=0; i<fields_to_allocate.length;i++){
+		// Field of player A or B?
+		if(fields_to_allocate[i].indexOf("A") != -1){
+			// Field of player A
+			// Find position
+			temp_position = this.field_names.indexOf(fields_to_allocate[i])
+			// Update store and score
+			this.field_values[6] += this.field_values[temp_position]
+			this.score.playerA +=  this.field_values[temp_position]
+			// Set stones to zero
+			this.field_values[temp_position] = 0
+		}else if(fields_to_allocate[i].indexOf("B") != -1){
+			// Field of player B
+			// Find position
+			temp_position = this.field_names.indexOf(fields_to_allocate[i])
+			// Update store and score
+			this.field_values[13] += this.field_values[temp_position]
+			this.score.playerB +=  this.field_values[temp_position]
+			// Set stones to zero
+			this.field_values[temp_position] = 0
+		}
 	}
 }
 
@@ -439,12 +492,14 @@ Bord.prototype.find_mini_max_move = function(){
 			best_move = this.possible_moves[0]
 			best_score = temp_minimizing_score
 		}else{
-			if(temp_minimizing_score > best_score){
+			if(temp_minimizing_score >= best_score){
 				best_score = temp_minimizing_score
 				best_move = this.possible_moves[i]
 			}
 		}
 	}
+	console.log('Score tree:')
+	console.log(score_tree)
 	return best_move
 }
 Bord.prototype.remove_stones_conquered_and_update_score = function(){
@@ -455,7 +510,11 @@ Bord.prototype.remove_stones_conquered_and_update_score = function(){
 	// Second check, the last stone landed must be the only stone in that field
 	var last_stone_position = this.field_names.indexOf(this.last_stone_landed)
 	if(this.field_values[last_stone_position] != 1) return
-	// Score!
+
+	// Last check, is it in a score?
+	if(last_stone_position == 6 | last_stone_position == 13) return
+
+	// All the checks passed, so Score!
 	// Find the correct position to take stones of, take the stones and update the scores,
 	// With filter mechanism, filter row current player, filter nummer of last stone landed (i.e.: A3 -> B3)
 	field_captured_code = this.field_names
@@ -470,8 +529,10 @@ Bord.prototype.remove_stones_conquered_and_update_score = function(){
 	// Update scores, one extra point for the last stone!
 	if(this.player_to_move == "A"){
 	 	this.score["playerA"] += this.field_values[field_captured_position] + 1
+	 	this.field_values[6] += this.field_values[field_captured_position] + 1
 	}else if(this.player_to_move == "B"){
 	 	this.score["playerB"] += this.field_values[field_captured_position] + 1
+	 	this.field_values[13] += this.field_values[field_captured_position] + 1
 	}
 	// Empty field 
 	this.field_values[field_captured_position] = 0
@@ -492,14 +553,18 @@ Bord.prototype.print_to_html = function(){
 	$("#A4").text(this.field_values[2])
 	$("#A5").text(this.field_values[1])
 	$("#A6").text(this.field_values[0])
-	$("#B1").text(this.field_values[6])
-	$("#B2").text(this.field_values[7])
-	$("#B3").text(this.field_values[8])
-	$("#B4").text(this.field_values[9])
-	$("#B5").text(this.field_values[10])
-	$("#B6").text(this.field_values[11])
-	$("#Score_playerA").text(this.score['playerA'])
-	$("#Score_playerB").text(this.score['playerB'])
+	$("#B1").text(this.field_values[7])
+	$("#B2").text(this.field_values[8])
+	$("#B3").text(this.field_values[9])
+	$("#B4").text(this.field_values[10])
+	$("#B5").text(this.field_values[11])
+	$("#B6").text(this.field_values[12])
+
+	$("#A_store").text(this.field_values[6])
+	$("#B_store").text(this.field_values[13])
+
+	$("#board_human_legend").text("Score human: " + this.score['playerA'])
+	$("#board_computer_legend").text("Score computer: " + this.score['playerB'])
 }
 main_bord = new Bord();
 main_bord.print_to_html();
