@@ -58,6 +58,57 @@
 			font-size:1.8em;
 			background-color: #F8F8F8 ;
 		}
+		.bord_spot_legend{
+        	text-align: center;
+    	}
+    	.bord_spot{
+        	/*font-size:2em;*/
+        	text-align: center;
+        	border: 3px solid black;
+    	}
+	    .bord_spot_span{
+	        padding:5px;
+	    }
+	    .bord_spot div{
+	        background-color: lightblue;
+	        width: 100%;
+	        height: 100%;
+	        padding: 10px;
+	        cursor: pointer;
+	    }
+
+	    /*New table design*/
+	    #board{
+	    	width:100%;
+	    	text-align: center;
+	    	
+	    }
+	    .board_player_info{
+	    	padding:10px;
+	    }
+	    #board_holes{
+	    	border: 3px solid black;
+	    }
+	    .board_hole_td{
+	    	outline: 1.5px solid black;
+	    }
+	    .board_hole_td div{
+	    	background-color: green;
+	    	width: 100%;
+	        height: 100%;
+	        padding: 5px;
+	        cursor: pointer;
+	    }
+	    .board_hole_store{
+	    	border-right: 3px solid black;
+	    	border-left: 3px solid black;
+	    }
+	    .board_hole_store div{
+	    	padding-left: 5px;
+	    	padding-right:5px;
+	    }
+
+
 
 
 	</style>
@@ -104,42 +155,86 @@
 				<div class="panel panel-primary">
 					<div class="panel-heading" >Board</div>
 					<div class="panel-body">
-						<table id="bord" style="width:100%">
+						<table id="board" style="width:100%">
 							<tr>
-								<td class="bord_spot_legend">A1</td>
-								<td class="bord_spot_legend">A2</td> 
-								<td class="bord_spot_legend">A3</td>
-								<td class="bord_spot_legend">A4</td>
-								<td class="bord_spot_legend">A5</td>
-								<td class="bord_spot_legend">A6</td>
+								<td class="board_player_info">Human</td>
 							</tr>
 							<tr>
-								<td class="bord_spot"><div id="A1">0</div></td>
-								<td class="bord_spot"><div id="A2">0</div></td> 
-								<td class="bord_spot"><div id="A3">0</div></td>
-								<td class="bord_spot"><div id="A4">0</div></td>
-								<td class="bord_spot"><div id="A5">0</div></td>
-								<td class="bord_spot"><div id="A6">0</div></td>
+								<td class="board_holes">
+									<table id="board_holes" style="width:100%">
+										<tr>
+											<td class="board_hole_store"><div id="A_store">0</div></td>
+											<td class="board_two_vert_holes">
+												<table style="width:100%">
+													<tr class = "board_hole_row">
+														<td class="board_hole_td"><div id="A1">A1</div></td>
+													</tr>
+													<tr class = "board_hole_row">
+														<td class = "board_hole_td"><div id="B1">B1</div></td>
+													</tr>
+												</table>
+											</td>
+											<td class="board_two_vert_holes">
+												<table  style="width:100%">
+													<tr class = "board_hole_row">
+														<td class = "board_hole_td"><div id="A2">A1</div></td>
+													</tr>
+													<tr class = "board_hole_row">
+														<td class = "board_hole_td"><div id="B2">A1</div></td>
+													</tr>
+												</table>
+											</td>
+											<td class="board_two_vert_holes">
+												<table style="width:100%">
+													<tr class = "board_hole_row">
+														<td class = "board_hole_td"><div id="A3">A1</div></td>
+													</tr>
+													<tr class = "board_hole_row">
+														<td class = "board_hole_td"><div id="B3">A1</div></td>
+													</tr>
+												</table>
+											</td>						
+											<td class="board_two_vert_holes">
+												<table style="width:100%">
+													<tr class = "board_hole_row">
+														<td class = "board_hole_td"><div id="A4">A1</div></td>
+													</tr>
+													<tr class = "board_hole_row">
+														<td class = "board_hole_td"><div id="B4">A1</div></td>
+													</tr>
+												</table>
+											</td>
+											<td class="board_two_vert_holes">
+												<table style="width:100%">
+													<tr class = "board_hole_row">
+														<td class = "board_hole_td"><div id="A5">A1</div></td>
+													</tr class = "board_hole_row">
+													<tr>
+														<td class = "board_hole_td"><div id="B5">A1</div></td>
+													</tr>
+												</table>
+											</td>
+											<td class="board_two_vert_holes">
+												<table style="width:100%">
+													<tr class = "board_hole_row">
+														<td class = "board_hole_td"><div id="A6">A1</div></td>
+													</tr>
+													<tr class = "board_hole_row">
+														<td class = "board_hole_td"><div id="B6">A1</div></td>
+													</tr>
+												</table>
+											</td>																													
+											<td class="board_hole_store"><div id="B_store">0</div></td>
+										</tr>	
+									</table>	
+								</td>
 							</tr>
 							<tr>
-								<td class="bord_spot"><div id="B1">0</div></td>
-								<td class="bord_spot"><div id="B2">0</div></td> 
-								<td class="bord_spot"><div id="B3">0</div></td>
-								<td class="bord_spot"><div id="B4">0</div></td>
-								<td class="bord_spot"><div id="B5">0</div></td>
-								<td class="bord_spot"><div id="B6">0</div></td>
-							</tr>
-							<tr>
-								<td class="bord_spot_legend">B1</td>
-								<td class="bord_spot_legend">B2</td> 
-								<td class="bord_spot_legend">B3</td>
-								<td class="bord_spot_legend">B4</td>
-								<td class="bord_spot_legend">B5</td>
-								<td class="bord_spot_legend">B6</td>
+								<td class="board_player_info">Computer</td>
 							</tr>
 						</table>
 					</div>
-				</div>
+				</div>				
 			</div>
 			<div class="col-sm-12">
 				<div class="panel panel-primary">
@@ -171,11 +266,12 @@ function Bord(){
 	this.score = {"playerA": 0 , "playerB":0}
 	
 	this.field_names = ["A6", "A5", "A4", "A3", "A2", "A1", "B1", "B2", "B3", "B4", "B5", "B6"]
-	this.field_values = [4,4,4,4,4,4,4,4,4,4,4,4]
+	this.field_values = [2,2,2,2,2,2,2,2,2,2,2,2]
 	
 	this.player_to_move = "A"
 	this.possible_moves = []
 	this.last_stone_landed;
+	this.next_computer_move;
 }
 Bord.prototype.find_possible_moves = function(){
 	
@@ -206,6 +302,22 @@ Bord.prototype.visualize_possible_moves = function(){
 		}
 	}, this)
 }
+Bord.prototype.visualize_best_move_computer = function(){
+	console.log('Now visualize next computer move: ' + this.next_computer_move)
+	this.field_names.forEach(function(field_name, field_position){
+		css_name = "#" + field_name
+		if(this.next_computer_move == field_name){
+			$('body').off('click',css_name)
+			$('body').on('click', css_name,  field_name, correct_button_clicked)
+			$(css_name).css('background-color', 'lightblue')
+		}else{
+			$('body').off('click',css_name)
+			$('body').on('click', css_name,field_name,  false_button_clicked)
+			$(css_name).css('background-color', 'transparent')
+		}
+	}, this)
+}
+
 function correct_button_clicked(click_event){
 	field_name_clicked = click_event.data
 	main_bord.move(field_name_clicked, "real")
@@ -260,20 +372,19 @@ Bord.prototype.move = function(selected_field_code, real_move_or_tree_building){
 
 			//Computer move, is random mode selected?
 			if(computer_mode == 'pc_mode_random'){
-				random_selected_field = this.possible_moves[Math.floor(Math.random()*this.possible_moves.length)];
-				this.move(random_selected_field, "real");
-				$('#latest_computer_move').text(random_selected_field)
+				// Generate random computer move
+				this.next_computer_move = this.possible_moves[Math.floor(Math.random()*this.possible_moves.length)];
+				//this.move(random_selected_field, "real");
+				//$('#latest_computer_move').text(random_selected_field)
 			}else if(computer_mode == 'pc_mode_minimax'){
 				// Minimax, so call function minimax that gives back random move
-				best_move = this.find_mini_max_move()
-				this.move(best_move, "real");
-				$('#latest_computer_move').text(best_move)
+				this.next_computer_move = this.find_mini_max_move()
+				//this.move(best_move, "real");
+				//$('#latest_computer_move').text(best_move)
 			}
-
-			//Debugging
-			//this.visualize_possible_moves();
-
+			this.visualize_best_move_computer();
 		}else{
+			// Human player, highlight his options	
 			this.visualize_possible_moves();
 		}
 	}else if(real_move_or_tree_building == "tree_building"){
@@ -284,10 +395,7 @@ Bord.prototype.move = function(selected_field_code, real_move_or_tree_building){
 
 // Find best option in a tree
 function find_best_move_in_tree_minimax(score_tree){
-	console.log('Find best move now')
 	for (var L1_move in score_tree) {
-		console.log('Option L1 move: ' + L1_move + ' with score ' +  score_tree[L1_move]['score_L1'])
-    	console.log(score_tree[L1_move]);
     	//for(var L2_move in score_tree[L1_move])
     	//	if()
 	}
@@ -297,7 +405,6 @@ function find_best_move_in_tree_minimax(score_tree){
 // Build 2 level mini max tree, computer picks a move, player picks a move, all combinations of these two levels
 Bord.prototype.build_2_level_tree = function(){
 	var score_tree = {}
-	console.log(this.possible_moves)
 	for(var i = 0; i < this.possible_moves.length; i++){
 		score_tree[this.possible_moves[i]] = {}
 		var virtual_bord = jQuery.extend(true, {}, this)
@@ -321,7 +428,6 @@ Bord.prototype.build_2_level_tree = function(){
 Bord.prototype.find_mini_max_move = function(){
 
 	// He already knows the next possible moves, which one should he pick?
-	console.log('Inside mini max')
 	var score_tree = {}
 	var best_score;
 	var best_move;
@@ -373,19 +479,7 @@ Bord.prototype.find_mini_max_move = function(){
 				best_move = this.possible_moves[i]
 			}
 		}
-
-		// if(i == 0){
-		// 	max_score_L1 = score_tree[virtual_bord.possible_moves[i]]['score_L1'];
-		// 	best_move = virtual_bord.possible_moves[i];
-		// }else{
-		// 	if(score_tree[virtual_bord.possible_moves[i]]['score_L1'] > max_score_L1){
-		// 		max_score_L1 = score_tree[virtual_bord.possible_moves[i]]['score_L1'];
-		// 		best_move = virtual_bord.possible_moves[i];
-		// 	}
-		// }
 	}
-	console.log(score_tree)
-	console.log(best_move)
 	return best_move
 }
 Bord.prototype.remove_stones_conquered_and_update_score = function(){
