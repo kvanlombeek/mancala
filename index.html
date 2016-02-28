@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
 
   <!-- Bootstrap -->
-  <link href="bootstrap/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 
   <!-- Bootstrap Material Design -->
   <link href="bootstrap/dist/css/bootstrap-material-design.css" rel="stylesheet">
@@ -31,7 +31,7 @@
   <script type="text/javascript" src="javascript/jquery.js"></script>
 
   <!-- Twitter Bootstrap -->
-	<script src="bootstrap/bootstrap.min.js"></script>
+	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
 	<!-- Material Design for Bootstrap -->
 	<script src="bootstrap/dist/js/material.js"></script>
@@ -157,7 +157,7 @@
 			                      <input type="radio" name="optionsRadios" id="pc_mode_minimax_L1" value="option2" onchange="pc_mode_selection(this.id)">
 			                      <span class="circle"></span>
 			                      <span class="check"></span>
-			                      Beginner: Minimax two levels deep
+			                      Beginner: Minimax with alpha beta two levels deep
 			                    </label>
 			                </div>
 			                <div class="radio radio-primary">
@@ -165,15 +165,7 @@
 			                      <input type="radio" name="optionsRadios" id="pc_mode_minimax_L2" value="option2" onchange="pc_mode_selection(this.id)">
 			                      <span class="circle"></span>
 			                      <span class="check"></span>
-			                      Pretty hard: Minimax four levels deep
-			                    </label>
-			                </div>
-			                <div class="radio radio-primary">
-			                    <label>
-			                      <input type="radio" name="optionsRadios" id="pc_mode_minimax_L3" value="option2" onchange="pc_mode_selection(this.id)">
-			                      <span class="circle"></span>
-			                      <span class="check"></span>
-			                      Expert: Minimax six levels deep
+			                      Pretty hard: Minimax with alpha beta four levels deep
 			                    </label>
 			                </div>
 			            </div>
@@ -190,8 +182,8 @@
 								<td class="board_holes">
 									<table id="board_holes" style="width:100%">
 										<tr>
-											<td class="board_hole_store"><div id="A_store">0</div></td>
-											<td class="board_two_vert_holes">
+											<td class="board_hole_store" style="width:12.5%"><div id="A_store">0</div></td>
+											<td class="board_two_vert_holes" style="width:12.5%">
 												<table style="width:100%">
 													<tr class = "board_hole_row">
 														<td class="board_hole_td"><div id="A1">A1</div></td>
@@ -201,7 +193,7 @@
 													</tr>
 												</table>
 											</td>
-											<td class="board_two_vert_holes">
+											<td class="board_two_vert_holes" style="width:12.5%">
 												<table  style="width:100%">
 													<tr class = "board_hole_row">
 														<td class = "board_hole_td"><div id="A2">A1</div></td>
@@ -211,7 +203,7 @@
 													</tr>
 												</table>
 											</td>
-											<td class="board_two_vert_holes">
+											<td class="board_two_vert_holes" style="width:12.5%">
 												<table style="width:100%">
 													<tr class = "board_hole_row">
 														<td class = "board_hole_td"><div id="A3">A1</div></td>
@@ -221,7 +213,7 @@
 													</tr>
 												</table>
 											</td>						
-											<td class="board_two_vert_holes">
+											<td class="board_two_vert_holes" style="width:12.5%">
 												<table style="width:100%">
 													<tr class = "board_hole_row">
 														<td class = "board_hole_td"><div id="A4">A1</div></td>
@@ -231,7 +223,7 @@
 													</tr>
 												</table>
 											</td>
-											<td class="board_two_vert_holes">
+											<td class="board_two_vert_holes" style="width:12.5%">
 												<table style="width:100%">
 													<tr class = "board_hole_row">
 														<td class = "board_hole_td"><div id="A5">A1</div></td>
@@ -241,7 +233,7 @@
 													</tr>
 												</table>
 											</td>
-											<td class="board_two_vert_holes">
+											<td class="board_two_vert_holes" style="width:12.5%">
 												<table style="width:100%">
 													<tr class = "board_hole_row">
 														<td class = "board_hole_td"><div id="A6">A1</div></td>
@@ -251,7 +243,7 @@
 													</tr>
 												</table>
 											</td>																													
-											<td class="board_hole_store"><div id="B_store">0</div></td>
+											<td class="board_hole_store" style="width:12.5%"><div id="B_store">0</div></td>
 										</tr>	
 									</table>	
 								</td>
@@ -373,7 +365,6 @@ function correct_button_clicked(click_event){
 	if(main_bord.player_to_move == 'A'){
 		main_bord.human_move(field_name_clicked)
 	}else{
-		console.log('Player B clicked, wat nu')
 		// Decode selected field to position
 		selected_field_position = main_bord.field_names.indexOf(field_name_clicked)
 		selected_field_value = main_bord.field_values[selected_field_position]
@@ -463,7 +454,6 @@ Bord.prototype.human_move = function(selected_field_code){
 			this.next_computer_move = this.find_mini_max_move(6)
 		}
 		// How many consequiteve moves will the computers do?
-		console.log('number computer moves: ' + this.next_computer_move.length / 2) 
 		this.number_of_next_computer_moves = this.next_computer_move.length/2
 		this.number_of_next_computer_moves_already_done = 0
 		this.visualize_best_move_computer()
@@ -476,9 +466,9 @@ Bord.prototype.tree_building_move = function(moves_to_simulate){
 	// Loop over them
 	for(var i=0;i<number_of_consq_moves; i++){
 		moves_generated += 1 // Counter for the moves generated
+
 		// Cut move out of pasted move
 		selected_field_code = moves_to_simulate.substring(i*2 , i*2 +2)
-		//console.log('Move number i: ' + i + "coded: " + selected_field_code)
 		// Decode selected field to position
 		selected_field_position = this.field_names.indexOf(selected_field_code)
 		selected_field_value = this.field_values[selected_field_position]
@@ -692,8 +682,7 @@ Bord.prototype.build_X_level_moves = function(X_levels){
 	var best_move;
 
 	if(this.possible_moves.length == 0){
-		// SO???
-		console.log('He is at a dead end of player B')
+		// SO??? I don't think there is a problem, as he has already the scores
 	} 
 	// Level 1: simulate through all the options of the computer
 	for(var i = 0; i < this.possible_moves.length; i++){
@@ -710,11 +699,9 @@ Bord.prototype.build_X_level_moves = function(X_levels){
 		var temp_score_tree = {}
 		var temp_minimizing_score = temp_score
 		if( virtual_bord.possible_moves.length == 0){
-			// SO???
-			console.log('He is at a dead end of player A')
+			// SO??? I don't think there is a problem, as he has already the scores
 		} 
 		for(var j=0; j < virtual_bord.possible_moves.length; j++){
-
 			// Create another virtual copy
 			var virtual_bord_L2 = jQuery.extend(true, {}, virtual_bord)
 			// Player A is playing again, so switch player
@@ -730,9 +717,7 @@ Bord.prototype.build_X_level_moves = function(X_levels){
 				temp_score_tree[virtual_bord.possible_moves[j]]['best_score'] = temp_score
 			}else if(X_levels == 4){
 				// He needs to generate again a 2 level tree, recursive
-				debugger;
 				temp_score_tree[virtual_bord.possible_moves[j]] = virtual_bord_L2.build_X_level_moves(2)
-				debugger;
 			}else if(X_levels == 6){
 				// He needs to generate again a 2 level tree, recursive
 				temp_score_tree[virtual_bord.possible_moves[j]] = virtual_bord_L2.build_X_level_moves(4)				
@@ -742,6 +727,12 @@ Bord.prototype.build_X_level_moves = function(X_levels){
 				temp_minimizing_score = temp_score_tree[virtual_bord.possible_moves[j]]['best_score']
 			}else{
 				temp_minimizing_score = Math.min(temp_minimizing_score, temp_score_tree[virtual_bord.possible_moves[j]]['best_score'])
+			}
+
+			// Here you do alpha beta, if the value at this j-th in the i-th branch is already smaller that the value if the previous i-th
+			// branch, the computer will never pick this i-th branch and no need to calculate the other j-branches
+			if(i > 0 & temp_minimizing_score <= best_score){
+				break;
 			}
 		}
 
@@ -772,12 +763,8 @@ var moves_generated;
 // Should get an argument levels deep
 Bord.prototype.find_mini_max_move = function(levels){
 	moves_generated = 0;
-	//console.log('Beginning of find mini max, with levels: ' + levels)
 	X_level_moves = this.build_X_level_moves(levels)
-	console.log('X_level moves: ')
-	console.log(X_level_moves)
 	best_move = X_level_moves['best_move']
-	console.log('Moves generated: ' + moves_generated)
 	return best_move
 }
 
@@ -791,7 +778,7 @@ Bord.prototype.remove_stones_conquered_and_update_score = function(){
 	if(this.field_values[last_stone_position] != 1) return
 	// Last check, is it in a score?
 	if(last_stone_position == 6 | last_stone_position == 13) return
-	// All the checks passed, so Score!
+	// All the checks passed, except one, there should be stones in the other side
 
 	// Find the correct position to take stones of, take the stones and update the scores,
 	// With filter mechanism, filter row current player, filter nummer of last stone landed (i.e.: A3 -> B3)
@@ -804,6 +791,10 @@ Bord.prototype.remove_stones_conquered_and_update_score = function(){
 	}, this)
 	field_captured_code = field_captured_code[0]
 	field_captured_position = this.field_names.indexOf(field_captured_code)
+
+	// Last check, does the other side contains a stone? If not, no score, exit function
+	if(this.field_values[field_captured_position] == 0) return
+
 	// Update scores, one extra point for the last stone!
 	if(this.player_to_move == "A"){
 	 	this.score["playerA"] += this.field_values[field_captured_position] + 1
@@ -860,8 +851,6 @@ Bord.prototype.print_end_score = function(){
 
 Bord.prototype.change_field_html = function(field_name){
 	css_name = "#" + field_name
-	console.log(this.field_names.indexOf(field_name))
-	console.log(field_name)
 	$(css_name).text(this.field_values[this.field_names.indexOf(field_name)])
 }
 
