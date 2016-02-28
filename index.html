@@ -731,7 +731,7 @@ Bord.prototype.build_X_level_moves = function(X_levels){
 
 			// Here you do alpha beta, if the value at this j-th in the i-th branch is already smaller that the value if the previous i-th
 			// branch, the computer will never pick this i-th branch and no need to calculate the other j-branches
-			if(i > 0 & temp_minimizing_score <= best_score){
+			if(i > 0 & temp_minimizing_score <= best_score & X_levels == 2){
 				break;
 			}
 		}
