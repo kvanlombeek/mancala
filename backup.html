@@ -1,0 +1,29 @@
+// Find best option in a tree
+function find_best_move_in_tree_minimax(score_tree){
+	for (var L1_move in score_tree) {
+    	//for(var L2_move in score_tree[L1_move])
+    	//	if()
+	}
+
+}
+
+// Build 2 level mini max tree, computer picks a move, player picks a move, all combinations of these two levels
+Bord.prototype.build_2_level_tree = function(){
+	var score_tree = {}
+	for(var i = 0; i < this.possible_moves.length; i++){
+		score_tree[this.possible_moves[i]] = {}
+		var virtual_bord = jQuery.extend(true, {}, this)
+		virtual_bord.move(virtual_bord.possible_moves[i], "tree_building")
+		score_tree[this.possible_moves[i]]['score_L1'] = virtual_bord.score['playerB'] - virtual_bord.score['playerA'] 
+		for(var j=0; j < virtual_bord.possible_moves.length; j++){
+
+			var virtual_bord_L2 = jQuery.extend(true, {}, virtual_bord)
+			// Player A is playing again, so switch player
+			virtual_bord_L2.player_to_move = "A"
+			virtual_bord_L2.move(virtual_bord.possible_moves[j], "tree_building")
+
+			score_tree[this.possible_moves[i]][virtual_bord.possible_moves[j]]={'score_L2':virtual_bord_L2.score['playerB']-virtual_bord_L2.score['playerA']}
+		}
+	}
+	return score_tree;
+}
