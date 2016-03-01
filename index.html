@@ -764,6 +764,7 @@ var moves_generated;
 Bord.prototype.find_mini_max_move = function(levels){
 	moves_generated = 0;
 	X_level_moves = this.build_X_level_moves(levels)
+	console.log(X_level_moves)
 	best_move = X_level_moves['best_move']
 	return best_move
 }
