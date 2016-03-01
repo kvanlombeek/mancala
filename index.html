@@ -277,8 +277,203 @@ function Bord(){
 	this.stones_to_distribute;
 	this.last_stone_landed;
 	this.next_computer_move;
+	this.number_of_next_computer_moves_to_do = 0;
 }
-Bord.prototype.find_possible_moves = function(real_move_or_tree_building){
+
+Bord.prototype.visualize_possible_moves = function(){
+	// Add a border and event listener around the ones that are possible
+	this.field_names.forEach(function(field_name, field_position){
+		css_name = "#" + field_name
+		if(this.possible_moves.indexOf(field_name) != -1){
+			$('body').off('click',css_name)
+			$('body').on('click', css_name,  field_name, correct_field_clicked)
+			$(css_name).css('background-color', 'lightblue')
+		}else{
+			$('body').off('click',css_name)
+			$('body').on('click', css_name,field_name,  false_button_clicked)
+			$(css_name).css('background-color', 'transparent')
+		}
+	}, this)
+}
+Bord.prototype.visualize_best_move_computer = function(){
+	console.log('Inside visualize_best_move_computer')
+	console.log(this.next_computer_move.length)
+	temp_i = this.next_computer_move.length/2 - this.number_of_next_computer_moves_to_do
+	console.log('tempi: ' +  temp_i)
+	console.log(this.next_computer_move)
+	// Event listeners zetten
+	this.field_names.forEach(function(field_name, field_position){
+		css_name = "#" + field_name
+		if(this.next_computer_move.substring(temp_i*2 ,temp_i*2+ 2) == field_name){
+			$('body').off('click',css_name)
+			$('body').on('click', css_name,  field_name, correct_field_clicked)
+			$(css_name).css('background-color', 'lightblue')
+		}else{
+			$('body').off('click',css_name)
+			$('body').on('click', css_name,field_name,  false_button_clicked)
+			$(css_name).css('background-color', 'transparent')
+		}
+	}, this)
+}
+
+function correct_field_clicked(click_event){
+	field_name_clicked = click_event.data
+	main_bord.move(field_name_clicked)
+	main_bord.print_to_html();
+	// Human or random pc is playing next
+	// ---------------------------------
+	if(main_bord.player_to_move == 'A' | computer_mode == 'pc_mode_random'){
+		// Find next possible move
+		main_bord.find_possible_moves('single');
+		if(main_bord.player_to_move == 'A'){
+			// Reset counter for computer player moves to do
+			main_bord.number_of_next_computer_moves_to_do = 0
+			// Let human pick one
+			main_bord.visualize_possible_moves();
+
+		}else if(computer_mode == 'pc_mode_random'){
+			// Random selection by computer
+			main_bord.number_of_next_computer_moves_to_do = 1
+			main_bord.next_computer_move = main_bord.possible_moves[Math.floor(Math.random()*main_bord.possible_moves.length)];
+			main_bord.visualize_best_move_computer();
+		}
+	// Minimax	
+	// ---------------------------------
+	}else if(main_bord.player_to_move == 'B' & computer_mode == 'pc_mode_minimax_L1'){
+		// Check if all the computer his moves are already excuted
+		if(main_bord.number_of_next_computer_moves_to_do == 0){
+			// Start minimax
+			moves_generated = 0;
+			main_bord.minimax(4, true)
+			main_bord.next_computer_move = main_bord.minimax_tree['best_move']
+			main_bord.number_of_next_computer_moves_to_do = main_bord.next_computer_move.length/2;
+			
+			console.log('Number to do: ' + main_bord.number_of_next_computer_moves_to_do)
+			console.log(main_bord.minimax_tree)
+			main_bord.visualize_best_move_computer();
+		}else if(main_bord.number_of_next_computer_moves_to_do > 0 ){
+			// Perform next move from minimax
+			main_bord.number_of_next_computer_moves_to_do -=1
+			console.log('Number to do: ' + main_bord.number_of_next_computer_moves_to_do)
+			main_bord.visualize_best_move_computer();
+		}
+		//console.log(main_bord.minimax_tree)
+	}
+	//main_bord.move(field_name_clicked, "real", "dont_check_for_double_move" )
+}
+
+Bord.prototype.minimax = function(X_levels, maximizing_player, alpha, beta){
+	if(X_levels == 2 ) console.log('Minimax level 2: ------------------------------')
+	if(X_levels == 3 ){
+		console.log('Minimax level 3: ------------------------------')
+		console.log('Moves: ' + moves_generated)
+	} 
+	if(X_levels == 4 ) console.log('Minimax level 4: ------------------------------')
+
+	// Find possible moves
+	this.find_possible_moves('multiple')
+	//console.log('Possible moves as first step of minimax: ' +  this.possible_moves)
+
+	// Reset score tree
+	this.minimax_tree = {}
+	// Safety precausion if no moves are possible
+	this.minimax_tree['best_move'];
+	this.minimax_tree['best_score'] = this.score['playerB'] - this.score['playerA']
+	this.minimax_tree['moves'] = {}
+	if(this.possible_moves.length == 0){
+		// SO??? I don't think there is a problem, as he has already the scores
+	} 
+	// Level 1: simulate through all the options of the computer	
+	for(var i = 0; i < this.possible_moves.length; i++){
+		//if(i>0) break
+		var temp_score_tree = {}
+		// Create virtual board
+		var virtual_bord = jQuery.extend(true, {}, this)
+		// Move generation
+		virtual_bord.tree_building_move(virtual_bord.possible_moves[i])
+		
+		// Do we have to go in deeper depth?
+		if(X_levels == 1){
+			var temp_score = virtual_bord.score['playerB']-virtual_bord.score['playerA']
+			temp_score_tree['best_score'] = temp_score
+			temp_score_tree['best_move'] = this.possible_moves[i]
+			temp_score_tree['moves'] = {}
+		}else if(X_levels > 1){
+			virtual_bord.minimax(X_levels - 1 , false)
+			temp_score_tree = virtual_bord.minimax_tree
+		}
+		//console.log(temp_score_tree)
+
+		// Set the best move equal to the first score
+		if(i==0){
+			this.minimax_tree['best_move'] = this.possible_moves[0]
+			this.minimax_tree['best_score'] = temp_score_tree['best_score']
+		}
+		
+		// MINI or MAXI ?
+		if(maximizing_player){
+			// Player is maximizing
+			if(temp_score_tree['best_score'] > this.minimax_tree['best_score']){
+				this.minimax_tree['best_score'] = temp_score_tree['best_score']
+				this.minimax_tree['best_move'] = this.possible_moves[i]
+			}
+		}else{
+			// Player is minimizing
+			if(temp_score_tree['best_score'] < this.minimax_tree['best_score']){
+				this.minimax_tree['best_score'] = temp_score_tree['best_score']
+				this.minimax_tree['best_move'] = this.possible_moves[i]
+			}
+		}
+		this.minimax_tree['moves'][this.possible_moves[i]] = temp_score_tree
+	}
+}
+
+function false_button_clicked(){
+}
+
+Bord.prototype.move = function(selected_field_code){
+	console.log('Inside function move')
+	// Decode selected field to position
+	selected_field_position = this.field_names.indexOf(selected_field_code)
+	selected_field_value = this.field_values[selected_field_position]
+	// How many stones does he pick up and distribute
+	this.stones_to_distribute = selected_field_value
+	// Set initial selected fields to zero
+	this.field_values[selected_field_position] = 0;
+	// Distribute the rest of the stones
+	this.distribute_the_stones();
+	// Calculate scores
+	this.remove_stones_conquered_and_update_score();
+	// If the player lands in his own store, he can play again
+	if(this.last_stone_landed.indexOf("store") != -1 & this.last_stone_landed.indexOf(this.player_to_move) != -1){
+		
+	}else{
+		this.set_next_player_to_move();
+		console.log('Player is changed: ' + this.player_to_move)
+	}
+}
+
+Bord.prototype.print_to_html = function(){
+	$("#A1").text(this.field_values[5])
+	$("#A2").text(this.field_values[4])
+	$("#A3").text(this.field_values[3])
+	$("#A4").text(this.field_values[2])
+	$("#A5").text(this.field_values[1])
+	$("#A6").text(this.field_values[0])
+	$("#B1").text(this.field_values[7])
+	$("#B2").text(this.field_values[8])
+	$("#B3").text(this.field_values[9])
+	$("#B4").text(this.field_values[10])
+	$("#B5").text(this.field_values[11])
+	$("#B6").text(this.field_values[12])
+
+	$("#A_store").text(this.field_values[6])
+	$("#B_store").text(this.field_values[13])
+
+	/*$("#board_human_legend").text("Score human: " + this.score['playerA'])
+	$("#board_computer_legend").text("Score computer: " + this.score['playerB'])*/
+}
+Bord.prototype.find_possible_moves = function(single_or_multiple){
 	
 	// Create an array with the possible moves
 	this.possible_moves = this.field_names
@@ -296,8 +491,18 @@ Bord.prototype.find_possible_moves = function(real_move_or_tree_building){
 		field_position = this.field_names.indexOf(field_name)
 		return this.field_values[field_position] > 0
 	}, this)
+
+	// If no moves are left, end game
+	if(this.possible_moves.length == 0){
+		//End of game
+		this.allocate_stones_to_stores_end_of_game();	
+		this.print_to_html();
+		this.visualize_possible_moves();
+		return
+	}
+
 	// Check if there is not a second move possible during tree building
-	if(real_move_or_tree_building == 'tree_building'){
+	if(single_or_multiple == 'multiple'){
 		var temp_double_moves = []
 		// Loop over possible moves
 		for(var i = 0; i<this.possible_moves.length; i++){
@@ -308,7 +513,7 @@ Bord.prototype.find_possible_moves = function(real_move_or_tree_building){
 			if(virtual_bord.last_stone_landed.indexOf(this.player_to_move) != -1 & virtual_bord.last_stone_landed.indexOf("store") != -1){
 
 				// Ok the computer has another move, the player can play again
-				virtual_bord.find_possible_moves('tree_building')
+				virtual_bord.find_possible_moves('multiple')
 				// HIER ZIT EEN FOUT, BIJ HET ZOEKEN VAN DE DUBBELSE MOVES
 				// This virtual move landed in the player his store, so add all the new moves in the array
 				for(var j=0; j<virtual_bord.possible_moves.length; j++){
@@ -328,190 +533,14 @@ Bord.prototype.find_possible_moves = function(real_move_or_tree_building){
 	}
 }
 
-Bord.prototype.visualize_possible_moves = function(){
-	// Add a border and event listener around the ones that are possible
-	this.field_names.forEach(function(field_name, field_position){
-		css_name = "#" + field_name
-		if(this.possible_moves.indexOf(field_name) != -1){
-			$('body').off('click',css_name)
-			$('body').on('click', css_name,  field_name, correct_field_clicked)
-			$(css_name).css('background-color', 'lightblue')
-		}else{
-			$('body').off('click',css_name)
-			$('body').on('click', css_name,field_name,  false_button_clicked)
-			$(css_name).css('background-color', 'transparent')
-		}
-	}, this)
-}
-
-Bord.prototype.visualize_best_move_computer = function(){
-	// Some foefelare to find the correct move to highlight in the sequence of moves:
-	temp_i = this.number_of_next_computer_moves_already_done
-	this.field_names.forEach(function(field_name, field_position){
-		css_name = "#" + field_name
-		if(this.next_computer_move.substring(temp_i*2 ,temp_i*2+ 2) == field_name){
-			$('body').off('click',css_name)
-			$('body').on('click', css_name,  field_name, correct_field_clicked)
-			$(css_name).css('background-color', 'lightblue')
-		}else{
-			$('body').off('click',css_name)
-			$('body').on('click', css_name,field_name,  false_button_clicked)
-			$(css_name).css('background-color', 'transparent')
-		}
-	}, this)
-}
-
-function correct_field_clicked(click_event){
-	field_name_clicked = click_event.data
-	if(main_bord.player_to_move == 'A' | (main_bord.player_to_move == 'B' & computer_mode == 'pc_mode_random')){
-		main_bord.human_or_random_computer_move(field_name_clicked)
-	}else{
-		// Decode selected field to position
-		selected_field_position = main_bord.field_names.indexOf(field_name_clicked)
-		selected_field_value = main_bord.field_values[selected_field_position]
-		// How many stones does he pick up and distribute
-		main_bord.stones_to_distribute = selected_field_value
-		// Set initial selected fields to zero
-		main_bord.field_values[selected_field_position] = 0;
-		// Distribute the rest of the stones
-		main_bord.distribute_the_stones();
-		// Calculate scores
-		main_bord.remove_stones_conquered_and_update_score();
-		// Print to HTML
-		main_bord.print_to_html();
-		// Keep track of the real moves he already did, add a move
-		main_bord.number_of_next_computer_moves_already_done +=1
-		if(main_bord.number_of_next_computer_moves_already_done == main_bord.number_of_next_computer_moves){
-			// The moves are all done, so it is up to the human player again
-			main_bord.set_next_player_to_move()
-			// And find possible moves for him
-			main_bord.find_possible_moves();
-			if(main_bord.possible_moves.length ==0){
-				// End of game
-				main_bord.allocate_stones_to_stores_end_of_game();
-				main_bord.print_to_html()
-				main_bord.print_end_score()			
-			}
-			// Human is up next, so let him play again
-			main_bord.visualize_possible_moves();	
-			return
-		}else{
-			// Computer is still up to play next, so visualize computer again with next move
-			main_bord.visualize_best_move_computer();
-			return
-		}
-	}
-	//main_bord.move(field_name_clicked, "real", "dont_check_for_double_move" )
-}
-function false_button_clicked(){
-}
-
-Bord.prototype.human_or_random_computer_move = function(selected_field_code){
-	console.log('human_or_random_computer_move')
-	// Decode selected field to position
-	selected_field_position = this.field_names.indexOf(selected_field_code)
-	selected_field_value = this.field_values[selected_field_position]
-	// How many stones does he pick up and distribute
-	this.stones_to_distribute = selected_field_value
-	// Set initial selected fields to zero
-	this.field_values[selected_field_position] = 0;
-	// Distribute the rest of the stones
-	this.distribute_the_stones();
-	// Calculate scores
-	this.remove_stones_conquered_and_update_score();
-	// If the player lands in his own store, he can play again
-	if(this.last_stone_landed.indexOf("store") != -1 & this.last_stone_landed.indexOf(this.player_to_move) != -1){
-		//Normal actions, just not switch player!
-		this.print_to_html();
-		this.find_possible_moves();
-		if(this.possible_moves.length ==0){
-			// End of game
-			this.allocate_stones_to_stores_end_of_game();
-			this.print_to_html()
-			this.print_end_score()		
-		}
-		// If human, visualize all of his options
-		if(this.player_to_move == 'A'){
-			this.visualize_possible_moves();	
-		}
-		// If random computer move, pick one move
-		if(this.player_to_move == 'B' & computer_mode == 'pc_mode_random'){
-			// Pick a random move
-			this.next_computer_move = this.possible_moves[Math.floor(Math.random()*this.possible_moves.length)];
-			this.number_of_next_computer_moves_already_done = 0;
-			this.visualize_best_move_computer();
-		}
-		return	
-	}
-
-	// Other player is up next
-	this.print_to_html();
-	this.set_next_player_to_move();
-
-	// If random move, let the computer select
-	if(this.player_to_move == 'B' & computer_mode == 'pc_mode_random'){
-			this.find_possible_moves();
-			if(this.possible_moves.length ==0){
-				// End of game
-				this.allocate_stones_to_stores_end_of_game();
-				this.print_to_html()
-				this.print_end_score()	
-				return		
-			}
-			// Pick a random move
-			this.next_computer_move = this.possible_moves[Math.floor(Math.random()*this.possible_moves.length)];
-			this.number_of_next_computer_moves_already_done = 0;
-			this.visualize_best_move_computer();
-			return 
-	}
-
-	// If Human, visualize all possible moves
-	if(this.player_to_move == 'A'){
-		this.find_possible_moves();
-		if(this.possible_moves.length ==0){
-			// End of game
-			this.allocate_stones_to_stores_end_of_game();
-			this.print_to_html()
-			this.print_end_score()	
-			return		
-		}
-		this.visualize_possible_moves();	
-	}
-
-
-	// Smarter computer, so prepare next move;
-	this.find_possible_moves("tree_building");
-	//If possible moves array is empty, game is over
-	if(this.possible_moves.length ==0){
-		this.allocate_stones_to_stores_end_of_game();
-		this.print_to_html()
-		this.print_end_score()	
-		return		
-	}
-	if(computer_mode == 'pc_mode_minimax_L1'){
-		// Minimax, so call function minimax that gives back best move
-		this.next_computer_move = this.find_mini_max_move(2)
-	}else if(computer_mode == 'pc_mode_minimax_L2'){
-		// Minimax, so call function minimax that gives back best move
-		this.next_computer_move = this.find_mini_max_move(4)
-	}else if(computer_mode == 'pc_mode_minimax_L3'){
-		// Minimax, so call function minimax that gives back best move
-		this.next_computer_move = this.find_mini_max_move(6)
-	}
-	// How many consequiteve moves will the computers do?
-	// Hier zit bug als je op het einde van de game zit!!
-	this.number_of_next_computer_moves = this.next_computer_move.length/2
-	this.number_of_next_computer_moves_already_done = 0
-	this.visualize_best_move_computer()
-}
 var debugging  = false;
+var moves_generated;
 Bord.prototype.tree_building_move = function(moves_to_simulate){
 	// How many consequtive moves?
 	number_of_consq_moves = moves_to_simulate.length / 2
 	// Loop over them
 	for(var i=0;i<number_of_consq_moves; i++){
 		moves_generated += 1 // Counter for the moves generated
-
 		// Cut move out of pasted move
 		selected_field_code = moves_to_simulate.substring(i*2 , i*2 +2)
 		// Decode selected field to position
@@ -533,11 +562,11 @@ Bord.prototype.tree_building_move = function(moves_to_simulate){
 	if(moves_to_simulate == 'A5A6'){
 		debugging = true;
 	}
-	this.find_possible_moves("tree_building");
+	//this.find_possible_moves("multiple");
 	// Check for end of game
-	if(this.possible_moves.length ==0){
-		this.allocate_stones_to_stores_end_of_game();	
-	}
+	//if(this.possible_moves.length ==0){
+		//this.allocate_stones_to_stores_end_of_game();	
+	//}
 }
 // FUNCTION only ment to check during tree building if the last move did not fall into the store of the player
 Bord.prototype.move_and_check_for_doubles = function(move_to_check){
@@ -679,15 +708,7 @@ Bord.prototype.build_X_level_moves = function(X_levels){
 	return X_level_moves
 }
 
-var moves_generated;
-// Should get an argument levels deep
-Bord.prototype.find_mini_max_move = function(levels){
-	moves_generated = 0;
-	X_level_moves = this.build_X_level_moves(levels)
-	console.log(X_level_moves)
-	best_move = X_level_moves['best_move']
-	return best_move
-}
+
 
 Bord.prototype.distribute_the_stones = function(){
 	// Distribute the stones, i is the counter to loop over the holes
@@ -772,26 +793,7 @@ Bord.prototype.set_next_player_to_move = function(){
 	 	this.player_to_move = "A"
 	}
 }
-Bord.prototype.print_to_html = function(){
-	$("#A1").text(this.field_values[5])
-	$("#A2").text(this.field_values[4])
-	$("#A3").text(this.field_values[3])
-	$("#A4").text(this.field_values[2])
-	$("#A5").text(this.field_values[1])
-	$("#A6").text(this.field_values[0])
-	$("#B1").text(this.field_values[7])
-	$("#B2").text(this.field_values[8])
-	$("#B3").text(this.field_values[9])
-	$("#B4").text(this.field_values[10])
-	$("#B5").text(this.field_values[11])
-	$("#B6").text(this.field_values[12])
 
-	$("#A_store").text(this.field_values[6])
-	$("#B_store").text(this.field_values[13])
-
-	$("#board_human_legend").text("Score human: " + this.score['playerA'])
-	$("#board_computer_legend").text("Score computer: " + this.score['playerB'])
-}
 Bord.prototype.print_end_score = function(){
 	if(this.score.playerA > this.score.playerB){
 		$("#board_human_legend").text('Player A won with ' + this.score.playerA + " seeds")
@@ -835,31 +837,19 @@ Bord.prototype.print_to_html_animated = function(last_button_clicked){
 		}
 	}.bind(this), 300);
 
-	// Old while loop
-	// loop_position = this.field_values.indexOf(last_button_clicked)
-	// while(counter < this.field_values.length){
-	// 	console.log('Is he looping')
-	// 	// Loop over buttons and update the score, starting from the one that was last clicked
-	// 	css_name = "#" + this.field_names[loop_position]
-	// 	$(css_name).text(this.field_values[loop_position])
-	// 	loop_position += 1
-	// 	if(loop_position > 13){
-	// 		loop_position - 14
-	// 	}
-	// 	counter +=1
-	// }
-
 	$("#board_human_legend").text("Score human: " + this.score['playerA'])
 	$("#board_computer_legend").text("Score computer: " + this.score['playerB'])
 }
 
+
+// Initial game
 main_bord = new Bord();
 main_bord.print_to_html();
 main_bord.find_possible_moves('real_move');
 main_bord.visualize_possible_moves();
 
 
-
+/*
 Bord.prototype.move = function(selected_field_code, real_move_or_tree_building, check_for_double_move){
 
 	// Decode selected field to position
@@ -946,8 +936,107 @@ Bord.prototype.move = function(selected_field_code, real_move_or_tree_building, 
 		}
 	}
 }
+*/
+
+/*Bord.prototype.human_or_random_computer_move = function(selected_field_code){
+	console.log('human_or_random_computer_move')
+	// Decode selected field to position
+	selected_field_position = this.field_names.indexOf(selected_field_code)
+	selected_field_value = this.field_values[selected_field_position]
+	// How many stones does he pick up and distribute
+	this.stones_to_distribute = selected_field_value
+	// Set initial selected fields to zero
+	this.field_values[selected_field_position] = 0;
+	// Distribute the rest of the stones
+	this.distribute_the_stones();
+	// Calculate scores
+	this.remove_stones_conquered_and_update_score();
+	// If the player lands in his own store, he can play again
+	if(this.last_stone_landed.indexOf("store") != -1 & this.last_stone_landed.indexOf(this.player_to_move) != -1){
+		//Normal actions, just not switch player!
+		this.print_to_html();
+		this.find_possible_moves();
+		if(this.possible_moves.length ==0){
+			// End of game
+			this.allocate_stones_to_stores_end_of_game();
+			this.print_to_html()
+			this.print_end_score()		
+		}
+		// If human, visualize all of his options
+		if(this.player_to_move == 'A'){
+			this.visualize_possible_moves();	
+		}
+		// If random computer move, pick one move
+		if(this.player_to_move == 'B' & computer_mode == 'pc_mode_random'){
+			// Pick a random move
+			this.next_computer_move = this.possible_moves[Math.floor(Math.random()*this.possible_moves.length)];
+			this.number_of_next_computer_moves_already_done = 0;
+			this.visualize_best_move_computer();
+		}
+		return	
+	}
+
+	// Other player is up next
+	this.print_to_html();
+	this.set_next_player_to_move();
+
+	// If random move, let the computer select
+	if(this.player_to_move == 'B' & computer_mode == 'pc_mode_random'){
+			this.find_possible_moves();
+			if(this.possible_moves.length ==0){
+				// End of game
+				this.allocate_stones_to_stores_end_of_game();
+				this.print_to_html()
+				this.print_end_score()	
+				return		
+			}
+			// Pick a random move
+			this.next_computer_move = this.possible_moves[Math.floor(Math.random()*this.possible_moves.length)];
+			this.number_of_next_computer_moves_already_done = 0;
+			this.visualize_best_move_computer();
+			return 
+	}
+
+	// If Human, visualize all possible moves
+	if(this.player_to_move == 'A'){
+		this.find_possible_moves();
+		if(this.possible_moves.length ==0){
+			// End of game
+			this.allocate_stones_to_stores_end_of_game();
+			this.print_to_html()
+			this.print_end_score()	
+			return		
+		}
+		this.visualize_possible_moves();	
+	}
 
 
+	// Smarter computer, so prepare next move;
+	this.find_possible_moves("tree_building");
+	//If possible moves array is empty, game is over
+	if(this.possible_moves.length ==0){
+		this.allocate_stones_to_stores_end_of_game();
+		this.print_to_html()
+		this.print_end_score()	
+		return		
+	}
+	if(computer_mode == 'pc_mode_minimax_L1'){
+		// Minimax, so call function minimax that gives back best move
+		this.next_computer_move = this.find_mini_max_move(2)
+	}else if(computer_mode == 'pc_mode_minimax_L2'){
+		// Minimax, so call function minimax that gives back best move
+		this.next_computer_move = this.find_mini_max_move(4)
+	}else if(computer_mode == 'pc_mode_minimax_L3'){
+		// Minimax, so call function minimax that gives back best move
+		this.next_computer_move = this.find_mini_max_move(6)
+	}
+	// How many consequiteve moves will the computers do?
+	// Hier zit bug als je op het einde van de game zit!!
+	this.number_of_next_computer_moves = this.next_computer_move.length/2
+	this.number_of_next_computer_moves_already_done = 0
+	this.visualize_best_move_computer()
+}
+*/
 
 
 </script>
