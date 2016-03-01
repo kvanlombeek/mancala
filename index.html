@@ -261,6 +261,7 @@
 
 <script>
 var computer_mode = 'pc_mode_minimax_L1' 
+var backup_board;
 
 function pc_mode_selection(mode_selected){
 	computer_mode = mode_selected
@@ -296,11 +297,7 @@ Bord.prototype.visualize_possible_moves = function(){
 	}, this)
 }
 Bord.prototype.visualize_best_move_computer = function(){
-	console.log('Inside visualize_best_move_computer')
-	console.log(this.next_computer_move.length)
 	temp_i = this.next_computer_move.length/2 - this.number_of_next_computer_moves_to_do
-	console.log('tempi: ' +  temp_i)
-	console.log(this.next_computer_move)
 	// Event listeners zetten
 	this.field_names.forEach(function(field_name, field_position){
 		css_name = "#" + field_name
@@ -318,6 +315,8 @@ Bord.prototype.visualize_best_move_computer = function(){
 
 function correct_field_clicked(click_event){
 	field_name_clicked = click_event.data
+	// Create back up of board
+	backup_board = jQuery.extend(main_bord, {}, this)
 	main_bord.move(field_name_clicked)
 	main_bord.print_to_html();
 	// Human or random pc is playing next
@@ -346,52 +345,62 @@ function correct_field_clicked(click_event){
 			moves_generated = 0;
 			if(computer_mode == 'pc_mode_minimax_L1'){
 				main_bord.minimax(2, true)
-			}else{
+				console.log('Moves generated: ' + moves_generated)
+			}else if(computer_mode == 'pc_mode_minimax_L2'){
+				console.log('Starting minimax level 4')
 				main_bord.minimax(4, true)
+				console.log('Moves generated: ' + moves_generated)
 			}
 			
 			main_bord.next_computer_move = main_bord.minimax_tree['best_move']
 			main_bord.number_of_next_computer_moves_to_do = main_bord.next_computer_move.length/2;
 			
-			console.log('Number to do: ' + main_bord.number_of_next_computer_moves_to_do)
-			console.log(main_bord.minimax_tree)
+			//console.log('Number to do: ' + main_bord.number_of_next_computer_moves_to_do)
+			//console.log(main_bord.minimax_tree)
 			main_bord.visualize_best_move_computer();
 		}else if(main_bord.number_of_next_computer_moves_to_do > 0 ){
 			// Perform next move from minimax
 			main_bord.number_of_next_computer_moves_to_do -=1
-			console.log('Number to do: ' + main_bord.number_of_next_computer_moves_to_do)
+			//console.log('Number to do: ' + main_bord.number_of_next_computer_moves_to_do)
 			main_bord.visualize_best_move_computer();
 		}
 		//console.log(main_bord.minimax_tree)
 	}
 	//main_bord.move(field_name_clicked, "real", "dont_check_for_double_move" )
 }
+var alpha;
+var beta;
+ 
 
 Bord.prototype.minimax = function(X_levels, maximizing_player, alpha, beta){
-	if(X_levels == 2 ) console.log('Minimax level 2: ------------------------------')
-	if(X_levels == 3 ){
-		console.log('Minimax level 3: ------------------------------')
-		console.log('Moves: ' + moves_generated)
-	} 
-	if(X_levels == 4 ) console.log('Minimax level 4: ------------------------------')
-
+	
 	// Find possible moves
 	this.find_possible_moves('multiple')
-	//console.log('Possible moves as first step of minimax: ' +  this.possible_moves)
 
 	// Reset score tree
 	this.minimax_tree = {}
 	// Safety precausion if no moves are possible
-	this.minimax_tree['best_move'];
-	this.minimax_tree['best_score'] = this.score['playerB'] - this.score['playerA']
-	this.minimax_tree['moves'] = {}
+
 	if(this.possible_moves.length == 0){
-		// SO??? I don't think there is a problem, as he has already the scores
+		// End of game
+		console.log('End of game in minimax tree')
+		var virtual_bord = jQuery.extend(true, {}, this)
+		virtual_bord.allocate_stones_to_stores_end_of_game()
+		this.minimax_tree['maximizer_score'] = virtual_bord.score['playerB']-virtual_bord.score['playerA']
+		this.minimax_tree['minimizer_score'] = virtual_bord.score['playerB']-virtual_bord.score['playerA']
+		return
 	} 
-	// Level 1: simulate through all the options of the computer	
+	// Array sorteren om dan met alpha beta minder moves te moeten doen hopelijk
+	this.possible_moves.sort(function(a, b){
+  		return b.length - a.length;
+	});
+	// Initialize values
+	this.minimax_tree['best_move'];
+	this.minimax_tree['maximizer_score'] = -1000
+	this.minimax_tree['minimizer_score'] = +1000
+	// Level 1: simulate through all the options of the computer
 	for(var i = 0; i < this.possible_moves.length; i++){
-		//if(i>0) break
-		var temp_score_tree = {}
+		//if(i>1) break
 		// Create virtual board
 		var virtual_bord = jQuery.extend(true, {}, this)
 		// Move generation
@@ -400,36 +409,77 @@ Bord.prototype.minimax = function(X_levels, maximizing_player, alpha, beta){
 		// Do we have to go in deeper depth?
 		if(X_levels == 1){
 			var temp_score = virtual_bord.score['playerB']-virtual_bord.score['playerA']
-			temp_score_tree['best_score'] = temp_score
-			temp_score_tree['best_move'] = this.possible_moves[i]
-			temp_score_tree['moves'] = {}
-		}else if(X_levels > 1){
-			virtual_bord.minimax(X_levels - 1 , false)
-			temp_score_tree = virtual_bord.minimax_tree
-		}
-		//console.log(temp_score_tree)
+			this.minimax_tree[this.possible_moves[i]] = temp_score
 
-		// Set the best move equal to the first score
+		}else if(X_levels == 2){
+			virtual_bord.minimax(X_levels - 1 , false, this.minimax_tree['minimizer_score'] ,this.minimax_tree['maximizer_score'])
+			this.minimax_tree[this.possible_moves[i]] = virtual_bord.minimax_tree
+		}else if(X_levels ==3){
+			virtual_bord.minimax(X_levels - 1 , true, this.minimax_tree['minimizer_score'] ,this.minimax_tree['maximizer_score'])
+			this.minimax_tree[this.possible_moves[i]] = virtual_bord.minimax_tree
+		}else if(X_levels ==4){
+			virtual_bord.minimax(X_levels - 1 , false, this.minimax_tree['minimizer_score'] ,this.minimax_tree['maximizer_score'])
+			this.minimax_tree[this.possible_moves[i]] = virtual_bord.minimax_tree
+		}
+
 		if(i==0){
-			this.minimax_tree['best_move'] = this.possible_moves[0]
-			this.minimax_tree['best_score'] = temp_score_tree['best_score']
-		}
-		
-		// MINI or MAXI ?
-		if(maximizing_player){
-			// Player is maximizing
-			if(temp_score_tree['best_score'] > this.minimax_tree['best_score']){
-				this.minimax_tree['best_score'] = temp_score_tree['best_score']
-				this.minimax_tree['best_move'] = this.possible_moves[i]
+			this.minimax_tree['best_move'] = this.possible_moves[i]
+			if(X_levels == 1){
+				this.minimax_tree['minimizer_score'] = temp_score
+				this.minimax_tree['maximizer_score'] = temp_score
+			}else{
+				this.minimax_tree['maximizer_score'] = this.minimax_tree[this.possible_moves[i]]['maximizer_score']
+				this.minimax_tree['minimizer_score'] = this.minimax_tree[this.possible_moves[i]]['minimizer_score']
+
 			}
-		}else{
+		}
+
+		// MAXIMIZER
+		if(i>0 & maximizing_player){
+			
+			if(this.minimax_tree[this.possible_moves[i]]['maximizer_score'] > this.minimax_tree['maximizer_score']){
+					this.minimax_tree['maximizer_score'] = this.minimax_tree[this.possible_moves[i]]['maximizer_score']
+					this.minimax_tree['minimizer_score'] = this.minimax_tree[this.possible_moves[i]]['maximizer_score']
+					this.minimax_tree['best_move'] = this.possible_moves[i]
+			}
+			// Here we check if the maximizer score is not greater than alpha, otherwize minimizer will never accept that 
+			// the maximizer goes down this way
+			if(this.minimax_tree['maximizer_score'] > alpha){
+				break;
+			}
+
+		// MINIMIZER
+		}else if (i>0 & !maximizing_player){
+			// Depth is zero here, so only a score, not a tree
+			if(X_levels == 1){
 			// Player is minimizing
-			if(temp_score_tree['best_score'] < this.minimax_tree['best_score']){
-				this.minimax_tree['best_score'] = temp_score_tree['best_score']
-				this.minimax_tree['best_move'] = this.possible_moves[i]
+				if(temp_score < this.minimax_tree['minimizer_score']){
+					this.minimax_tree['minimizer_score'] = temp_score
+					this.minimax_tree['maximizer_score'] = temp_score
+					this.minimax_tree['best_move'] = this.possible_moves[i]
+				}
+			}else{
+				if(this.minimax_tree[this.possible_moves[i]]['minimizer_score'] < this.minimax_tree['minimizer_score']){
+					this.minimax_tree['minimizer_score'] = this.minimax_tree[this.possible_moves[i]]['minimizer_score']
+					this.minimax_tree['maximizer_score'] = this.minimax_tree[this.possible_moves[i]]['minimizer_score']
+					this.minimax_tree['best_move'] = this.possible_moves[i]
+				}
+
 			}
+			// Check if de minimizer score niet kleiner is dan beta, want dan mag je er mee stoppen!
+			if(this.minimax_tree['minimizer_score'] < beta){
+				break;
+			}
+
 		}
-		this.minimax_tree['moves'][this.possible_moves[i]] = temp_score_tree
+		//this.minimax_tree['moves'][this.possible_moves[i]] = temp_score_tree
+		if(X_levels == 4){
+			console.log('this.minimax_tree')
+			console.log('-------------------')
+			console.log(this.minimax_tree)
+			console.log('-------------------')
+		}
+
 	}
 }
 
