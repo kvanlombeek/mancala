@@ -339,12 +339,17 @@ function correct_field_clicked(click_event){
 		}
 	// Minimax	
 	// ---------------------------------
-	}else if(main_bord.player_to_move == 'B' & computer_mode == 'pc_mode_minimax_L1'){
+	}else if(main_bord.player_to_move == 'B' & (computer_mode == 'pc_mode_minimax_L1' | computer_mode == 'pc_mode_minimax_L2')){
 		// Check if all the computer his moves are already excuted
 		if(main_bord.number_of_next_computer_moves_to_do == 0){
 			// Start minimax
 			moves_generated = 0;
-			main_bord.minimax(4, true)
+			if(computer_mode == 'pc_mode_minimax_L1'){
+				main_bord.minimax(2, true)
+			}else{
+				main_bord.minimax(4, true)
+			}
+			
 			main_bord.next_computer_move = main_bord.minimax_tree['best_move']
 			main_bord.number_of_next_computer_moves_to_do = main_bord.next_computer_move.length/2;
 			
