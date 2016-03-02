@@ -394,8 +394,7 @@ Bord.prototype.minimax = function(X_levels, maximizing_player, alpha, beta){
 	});
 	// Initialize values
 	this.minimax_tree['best_move'];
-	this.minimax_tree['maximizer_score'] = -1000
-	this.minimax_tree['minimizer_score'] = +1000
+
 	// Level 1: simulate through all the options of the computer
 	for(var i = 0; i < this.possible_moves.length; i++){
 		//if(i>1) break
@@ -404,11 +403,10 @@ Bord.prototype.minimax = function(X_levels, maximizing_player, alpha, beta){
 		// Move generation
 		virtual_bord.tree_building_move(virtual_bord.possible_moves[i])
 		
-		// Do we have to go in deeper depth?
+		// Call minimax recursively
 		if(X_levels == 1){
 			var temp_score = virtual_bord.score['playerB']-virtual_bord.score['playerA']
 			this.minimax_tree[this.possible_moves[i]] = temp_score
-
 		}else if(X_levels == 2){
 			virtual_bord.minimax(X_levels - 1 , false, this.minimax_tree['minimizer_score'] ,this.minimax_tree['maximizer_score'])
 			this.minimax_tree[this.possible_moves[i]] = virtual_bord.minimax_tree
@@ -424,24 +422,26 @@ Bord.prototype.minimax = function(X_levels, maximizing_player, alpha, beta){
 			this.minimax_tree['best_move'] = this.possible_moves[i]
 			if(X_levels == 1){
 				this.minimax_tree['minimizer_score'] = temp_score
-				this.minimax_tree['maximizer_score'] = temp_score
 			}else{
-				this.minimax_tree['maximizer_score'] = this.minimax_tree[this.possible_moves[i]]['maximizer_score']
-				this.minimax_tree['minimizer_score'] = this.minimax_tree[this.possible_moves[i]]['minimizer_score']
+				if(maximizing_player){
+					this.minimax_tree['maximizer_score'] = this.minimax_tree[this.possible_moves[i]]['minimizer_score']
+				}else{
+					this.minimax_tree['minimizer_score'] = this.minimax_tree[this.possible_moves[i]]['maximizer_score']
+				}	
 			}
 		}
 
 		// MAXIMIZER
 		if(i>0 & maximizing_player){
 			
-			if(this.minimax_tree[this.possible_moves[i]]['maximizer_score'] > this.minimax_tree['maximizer_score']){
-					this.minimax_tree['maximizer_score'] = this.minimax_tree[this.possible_moves[i]]['maximizer_score']
+			if(this.minimax_tree[this.possible_moves[i]]['minimizer_score'] > this.minimax_tree['maximizer_score']){
+					this.minimax_tree['maximizer_score'] = this.minimax_tree[this.possible_moves[i]]['minimizer_score']
 					//this.minimax_tree['minimizer_score'] = this.minimax_tree[this.possible_moves[i]]['maximizer_score']
 					this.minimax_tree['best_move'] = this.possible_moves[i]
 			}
 			// Here we check if the maximizer score is not greater than alpha, otherwize minimizer will never accept that 
 			// the maximizer goes down this way
-			if(this.minimax_tree['maximizer_score'] > alpha){
+			if(this.minimax_tree[this.possible_moves[i]]['maximizer_score'] > alpha){
 				break;
 			}
 
@@ -452,28 +452,27 @@ Bord.prototype.minimax = function(X_levels, maximizing_player, alpha, beta){
 			// Player is minimizing
 				if(temp_score < this.minimax_tree['minimizer_score']){
 					this.minimax_tree['minimizer_score'] = temp_score
-					//this.minimax_tree['maximizer_score'] = temp_score
 					this.minimax_tree['best_move'] = this.possible_moves[i]
 				}
 			}else{
-				if(this.minimax_tree[this.possible_moves[i]]['minimizer_score'] < this.minimax_tree['minimizer_score']){
+				if(this.minimax_tree[this.possible_moves[i]]['maximizer_score'] < this.minimax_tree['minimizer_score']){
 					this.minimax_tree['minimizer_score'] = this.minimax_tree[this.possible_moves[i]]['minimizer_score']
-					//this.minimax_tree['maximizer_score'] = this.minimax_tree[this.possible_moves[i]]['minimizer_score']
 					this.minimax_tree['best_move'] = this.possible_moves[i]
 				}
 			}
 			// Check if de minimizer score niet kleiner is dan beta, want dan mag je er mee stoppen!
-			if(this.minimax_tree['minimizer_score'] < beta){
+			if(this.minimax_tree[this.possible_moves[i]]['minimizer_score']  < beta){
 				break;
 			}
 		}
 		//this.minimax_tree['moves'][this.possible_moves[i]] = temp_score_tree
-		if(X_levels == 4){
-			//console.log('this.minimax_tree')
+		//if(X_levels == 4){
+		//console.log('Level: ' + X_levels + ' tree')
+		//console.log(this.minimax_tree)
 			//console.log('-------------------')
 			//console.log(this.minimax_tree)
 			//console.log('-------------------')
-		}
+		//}
 	}
 }
 
