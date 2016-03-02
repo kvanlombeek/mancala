@@ -355,8 +355,8 @@ function correct_field_clicked(click_event){
 			main_bord.next_computer_move = main_bord.minimax_tree['best_move']
 			main_bord.number_of_next_computer_moves_to_do = main_bord.next_computer_move.length/2;
 			
-			//console.log('Number to do: ' + main_bord.number_of_next_computer_moves_to_do)
-			//console.log(main_bord.minimax_tree)
+			console.log('Generated minimax tree')
+			console.log(main_bord.minimax_tree)
 			main_bord.visualize_best_move_computer();
 		}else if(main_bord.number_of_next_computer_moves_to_do > 0 ){
 			// Perform next move from minimax
@@ -371,7 +371,6 @@ function correct_field_clicked(click_event){
 var alpha;
 var beta;
  
-
 Bord.prototype.minimax = function(X_levels, maximizing_player, alpha, beta){
 	
 	// Find possible moves
@@ -379,7 +378,6 @@ Bord.prototype.minimax = function(X_levels, maximizing_player, alpha, beta){
 
 	// Reset score tree
 	this.minimax_tree = {}
-	// Safety precausion if no moves are possible
 
 	if(this.possible_moves.length == 0){
 		// End of game
@@ -430,7 +428,6 @@ Bord.prototype.minimax = function(X_levels, maximizing_player, alpha, beta){
 			}else{
 				this.minimax_tree['maximizer_score'] = this.minimax_tree[this.possible_moves[i]]['maximizer_score']
 				this.minimax_tree['minimizer_score'] = this.minimax_tree[this.possible_moves[i]]['minimizer_score']
-
 			}
 		}
 
@@ -439,7 +436,7 @@ Bord.prototype.minimax = function(X_levels, maximizing_player, alpha, beta){
 			
 			if(this.minimax_tree[this.possible_moves[i]]['maximizer_score'] > this.minimax_tree['maximizer_score']){
 					this.minimax_tree['maximizer_score'] = this.minimax_tree[this.possible_moves[i]]['maximizer_score']
-					this.minimax_tree['minimizer_score'] = this.minimax_tree[this.possible_moves[i]]['maximizer_score']
+					//this.minimax_tree['minimizer_score'] = this.minimax_tree[this.possible_moves[i]]['maximizer_score']
 					this.minimax_tree['best_move'] = this.possible_moves[i]
 			}
 			// Here we check if the maximizer score is not greater than alpha, otherwize minimizer will never accept that 
@@ -455,31 +452,28 @@ Bord.prototype.minimax = function(X_levels, maximizing_player, alpha, beta){
 			// Player is minimizing
 				if(temp_score < this.minimax_tree['minimizer_score']){
 					this.minimax_tree['minimizer_score'] = temp_score
-					this.minimax_tree['maximizer_score'] = temp_score
+					//this.minimax_tree['maximizer_score'] = temp_score
 					this.minimax_tree['best_move'] = this.possible_moves[i]
 				}
 			}else{
 				if(this.minimax_tree[this.possible_moves[i]]['minimizer_score'] < this.minimax_tree['minimizer_score']){
 					this.minimax_tree['minimizer_score'] = this.minimax_tree[this.possible_moves[i]]['minimizer_score']
-					this.minimax_tree['maximizer_score'] = this.minimax_tree[this.possible_moves[i]]['minimizer_score']
+					//this.minimax_tree['maximizer_score'] = this.minimax_tree[this.possible_moves[i]]['minimizer_score']
 					this.minimax_tree['best_move'] = this.possible_moves[i]
 				}
-
 			}
 			// Check if de minimizer score niet kleiner is dan beta, want dan mag je er mee stoppen!
 			if(this.minimax_tree['minimizer_score'] < beta){
 				break;
 			}
-
 		}
 		//this.minimax_tree['moves'][this.possible_moves[i]] = temp_score_tree
 		if(X_levels == 4){
-			console.log('this.minimax_tree')
-			console.log('-------------------')
-			console.log(this.minimax_tree)
-			console.log('-------------------')
+			//console.log('this.minimax_tree')
+			//console.log('-------------------')
+			//console.log(this.minimax_tree)
+			//console.log('-------------------')
 		}
-
 	}
 }
 
@@ -547,8 +541,8 @@ Bord.prototype.find_possible_moves = function(single_or_multiple){
 		return this.field_values[field_position] > 0
 	}, this)
 
-	// If no moves are left, end game
-	if(this.possible_moves.length == 0){
+	// If no moves are left, end game. Only do this for real game (find single possible moves)
+	if(this.possible_moves.length == 0 & single_or_multiple=='single'){
 		//End of game
 		this.allocate_stones_to_stores_end_of_game();	
 		this.print_to_html();
@@ -617,11 +611,6 @@ Bord.prototype.tree_building_move = function(moves_to_simulate){
 	if(moves_to_simulate == 'A5A6'){
 		debugging = true;
 	}
-	//this.find_possible_moves("multiple");
-	// Check for end of game
-	//if(this.possible_moves.length ==0){
-		//this.allocate_stones_to_stores_end_of_game();	
-	//}
 }
 // FUNCTION only ment to check during tree building if the last move did not fall into the store of the player
 Bord.prototype.move_and_check_for_doubles = function(move_to_check){
@@ -762,8 +751,6 @@ Bord.prototype.build_X_level_moves = function(X_levels){
 	X_level_moves['score_tree'] = score_tree
 	return X_level_moves
 }
-
-
 
 Bord.prototype.distribute_the_stones = function(){
 	// Distribute the stones, i is the counter to loop over the holes
