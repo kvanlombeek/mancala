@@ -435,7 +435,7 @@ Bord.prototype.minimax = function(X_levels, maximizing_player, alpha, beta){
 		virtual_bord.find_possible_moves()
 		
 		// Call minimax recursively
-		if(X_levels == 1 | virtual_bord.possible_moves.length == 0 | moves_generated>10000){
+		if(X_levels == 1 | virtual_bord.possible_moves.length == 0){
 			if(maximizing_player){
 				this.minimax_tree[this.possible_moves[i]]['minimizer_score'] = virtual_bord.score['playerB']-virtual_bord.score['playerA']
 			}else{
@@ -649,8 +649,6 @@ Bord.prototype.move_and_check_for_doubles = function(move_to_check){
 	this.field_values[selected_field_position] = 0;
 	// Distribute the rest of the stones
 	this.distribute_the_stones();
-	// Remember after the loop where the last stone landed, this is important to calculate the scores
-	this.last_stone_landed = this.field_names[board_field_to_fill]
 }
 
 Bord.prototype.allocate_stones_to_stores_end_of_game = function(){
