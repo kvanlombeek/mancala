@@ -165,7 +165,7 @@
 			                      <input type="radio" name="optionsRadios" id="pc_mode_minimax_L2" value="option2" onchange="pc_mode_selection(this.id)">
 			                      <span class="circle"></span>
 			                      <span class="check"></span>
-			                      Pretty hard: Minimax with alpha beta four levels deep
+			                      Pretty hard: Minimax with alpha beta four levels deep (slow)
 			                    </label>
 			                </div>
 			                <div class="radio radio-primary">
@@ -173,7 +173,15 @@
 			                      <input type="radio" name="optionsRadios" id="pc_mode_minimax_L3" value="option2" onchange="pc_mode_selection(this.id)">
 			                      <span class="circle"></span>
 			                      <span class="check"></span>
-			                      Very hard: Minimax with alpha beta six levels deep
+			                      Very hard: Minimax with alpha beta six levels deep (very slow)
+			                    </label>
+			                </div>
+			                <div class="radio radio-primary">
+			                    <label>
+			                      <input type="radio" name="optionsRadios" id="pc_mode_minimax_L4" value="option2" onchange="pc_mode_selection(this.id)">
+			                      <span class="circle"></span>
+			                      <span class="check"></span>
+			                      Extremely though: Minimax with alpha ten levels deep, breath first six levels deep (very slow)
 			                    </label>
 			                </div>
 			            </div>
@@ -279,7 +287,7 @@ function Bord(){
 	this.score = {"playerA": 0 , "playerB":0}
 	
 	this.field_names = ["A6", "A5", "A4", "A3", "A2", "A1", "A_store","B1", "B2", "B3", "B4", "B5", "B6", "B_store"]
-	this.field_values = [4,4,4,4,4,4,0,4,4,4,4,4,4,0]
+	this.field_values = [3,3,3,3,3,3,0,3,3,3,3,3,3,0]
 	
 	this.player_to_move = "A"
 	this.possible_moves = [];
@@ -342,7 +350,7 @@ function correct_field_clicked(click_event){
 	// Human or random pc is playing next
 	// ---------------------------------
 	if(main_bord.player_to_move == 'A' | computer_mode == 'pc_mode_random'){
-
+		console.log(computer_mode)
 		if(main_bord.player_to_move == 'A'){
 			// Reset counter for computer player moves to do
 			main_bord.number_of_next_computer_moves_to_do = 0
@@ -350,10 +358,11 @@ function correct_field_clicked(click_event){
 			main_bord.visualize_possible_moves();
 
 		}else if(computer_mode == 'pc_mode_random'){
+
 			// Random selection by computer
 			main_bord.number_of_next_computer_moves_to_do = 1
 			main_bord.next_computer_move = main_bord.possible_moves[Math.floor(Math.random()*main_bord.possible_moves.length)];
-			main_bord.visualize_possible_moves();
+			main_bord.visualize_best_move_computer();
 		}
 	// Minimax	
 	// ---------------------------------
@@ -371,6 +380,10 @@ function correct_field_clicked(click_event){
 			}else if(computer_mode == 'pc_mode_minimax_L3'){
 				console.log('Starting minimax function with 6 levels deep')
 				main_bord.minimax(6, true)
+				console.log('Moves generated: ' + moves_generated)
+			}else if(computer_mode == 'pc_mode_minimax_L4'){
+				console.log('Starting minimax function breath first')
+				main_bord.minimax(8, true)
 				console.log('Moves generated: ' + moves_generated)
 			}
 			console.log('Generated minimax tree')
@@ -390,7 +403,7 @@ function correct_field_clicked(click_event){
 
 		}else if(main_bord.number_of_next_computer_moves_to_do > 0 ){
 			// Perform next move from minimax
-			main_bord.number_of_next_computer_moves_to_do -=1
+			main_bord.number_of_next_computer_moves_to_do -= 1
 			//console.log('Number to do: ' + main_bord.number_of_next_computer_moves_to_do)
 			main_bord.visualize_best_move_computer();
 		}
@@ -403,8 +416,9 @@ var beta;
  
 Bord.prototype.minimax = function(X_levels, maximizing_player, alpha, beta){
 	
-	if(moves_generated % 100 == 0 ) console.log('Moves generated: ' + moves_generated)
-
+	//if(moves_generated > 5000) console.log('Moves generated: ' + moves_generated + 'X_levels: ' + X_levels)
+	//console.log('X_levels: ' + X_levels)
+	
 	// Find possible moves
 	this.find_possible_moves('multiple')
 
@@ -426,6 +440,7 @@ Bord.prototype.minimax = function(X_levels, maximizing_player, alpha, beta){
 	
 	// Level 1: simulate through all the options of the computer
 	for(var i = 0; i < this.possible_moves.length; i++){
+
 		//if(i>1) break
 		// Initialize move tree
 		this.minimax_tree[this.possible_moves[i]] = {}
@@ -435,26 +450,19 @@ Bord.prototype.minimax = function(X_levels, maximizing_player, alpha, beta){
 		virtual_bord.find_possible_moves()
 		
 		// Call minimax recursively
-		if(X_levels == 1 | virtual_bord.possible_moves.length == 0){
+		if(X_levels == 1 | virtual_bord.possible_moves.length == 0  | (moves_generated > 10000 && X_levels < 6)){
 			if(maximizing_player){
 				this.minimax_tree[this.possible_moves[i]]['minimizer_score'] = virtual_bord.score['playerB']-virtual_bord.score['playerA']
 			}else{
 				this.minimax_tree[this.possible_moves[i]]['maximizer_score'] = virtual_bord.score['playerB']-virtual_bord.score['playerA']
 			}
-		}else if(X_levels ==2){
+		}else if(X_levels % 2 == 0){
+			// Even player, so minimizer
 			virtual_bord.minimax(X_levels - 1 , false, this.minimax_tree['minimizer_score'] ,this.minimax_tree['maximizer_score'])
 			this.minimax_tree[this.possible_moves[i]] = virtual_bord.minimax_tree
-		}else if(X_levels ==3){
+		}else if(X_levels  % 2 == 1){
+			// Uneven player, so maximizer
 			virtual_bord.minimax(X_levels - 1 , true, this.minimax_tree['minimizer_score'] ,this.minimax_tree['maximizer_score'])
-			this.minimax_tree[this.possible_moves[i]] = virtual_bord.minimax_tree
-		}else if(X_levels ==4){
-			virtual_bord.minimax(X_levels - 1 , false, this.minimax_tree['minimizer_score'] ,this.minimax_tree['maximizer_score'])
-			this.minimax_tree[this.possible_moves[i]] = virtual_bord.minimax_tree
-		}else if(X_levels ==5){
-			virtual_bord.minimax(X_levels - 1 , true, this.minimax_tree['minimizer_score'] ,this.minimax_tree['maximizer_score'])
-			this.minimax_tree[this.possible_moves[i]] = virtual_bord.minimax_tree
-		}else if(X_levels ==6){
-			virtual_bord.minimax(X_levels - 1 , false, this.minimax_tree['minimizer_score'] ,this.minimax_tree['maximizer_score'])
 			this.minimax_tree[this.possible_moves[i]] = virtual_bord.minimax_tree
 		}
 
